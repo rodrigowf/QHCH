@@ -30,16 +30,16 @@ The goal of this project is to **share and demonstrate QHPH** in an accessible w
 1. **Clone the repository**:  
    ```bash
    git clone https://github.com/rodrigowf/QHPH.git  
-   cd QHPH
+   cd QHPH/chat
    ``` 
 
 2. **Install dependencies**:  
    ```bash
-   npm install express body-parser fs path axios dotenv
+   npm install
    ```
 
 3. **Set up your OpenAI API key**:  
-   Create a `.env` file in the root directory with the following content:
+   Create a `.env` file in the chat/ directory with the following content:
    ```
    OPENAI_API_KEY=your-api-key-here
    PORT=5000
@@ -48,14 +48,14 @@ The goal of this project is to **share and demonstrate QHPH** in an accessible w
 
 4. **Run the server**:  
    ```bash
-   node chat/server.js
+   node server.js
    ```  
    This will start a local server on port 5000 (or the port specified in your .env file).
 
 5. **Open the applications**:  
-   - For the **QHPH Website**, open your browser to: **`http://localhost:5000/page/index.html`**  
+   - For the **QHPH Website**, open your browser to: **`http://localhost:5000/`**  
      – This will display the interactive/dynamic webpage explaining the QHPH theory. You can read through the sections of the hypothesis here in a formatted way.  
-   - For the **Chat GPT Interface**, open: **`http://localhost:5000/chat/index.html`**  
+   - For the **Chat GPT Interface**, open: **`http://localhost:5000/`**  
      – This loads the chat application. You can choose a persona (Specialist or Sage) and ask questions about QHPH. The AI will respond based on the content of the hypothesis.
 
 ## Usage Guide

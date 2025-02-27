@@ -23,12 +23,26 @@ import {
   ListItemText,
   ListItemSecondaryAction,
   Divider,
-  useMediaQuery
+  useMediaQuery,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogContentText,
+  DialogActions,
+  Snackbar,
+  Alert
 } from '@mui/material';
 import SendIcon from '@mui/icons-material/Send';
 import InfoIcon from '@mui/icons-material/Info';
 import MenuIcon from '@mui/icons-material/Menu';
 import AddIcon from '@mui/icons-material/Add';
+import DownloadIcon from '@mui/icons-material/Download';
+import KeyIcon from '@mui/icons-material/Key';
+import { agentPrompts, availableAgents } from './prompts';
+
+// Local storage keys
+const API_KEY_STORAGE_KEY = 'openai_api_key';
+const CONVERSATIONS_STORAGE_KEY = 'qhph_conversations';
 
 const drawerWidth = 300;
 
@@ -36,61 +50,50 @@ function App() {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
-  const [agents, setAgents] = useState([]);
-  const [selectedAgent, setSelectedAgent] = useState('');
+  const [selectedAgent, setSelectedAgent] = useState('specialist');
   const [conversations, setConversations] = useState([]);
   const [selectedConversation, setSelectedConversation] = useState(null);
   const [drawerOpen, setDrawerOpen] = useState(true);
+  const [apiKey, setApiKey] = useState('');
+  const [apiKeyDialogOpen, setApiKeyDialogOpen] = useState(false);
+  const [tempApiKey, setTempApiKey] = useState('');
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState('');
+  const [snackbarSeverity, setSnackbarSeverity] = useState('success');
+  
   const messagesEndRef = useRef(null);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
-  // Fetch available agents when component mounts
+  // Load API key and conversations from local storage on component mount
   useEffect(() => {
-    fetch('/api/agents')
-      .then(res => res.json())
-      .then(data => {
-        setAgents(data);
-        if (data.length > 0) {
-          setSelectedAgent(data[0].id);
-        }
-      })
-      .catch(error => console.error('Error fetching agents:', error));
+    const storedApiKey = localStorage.getItem(API_KEY_STORAGE_KEY);
+    if (storedApiKey) {
+      setApiKey(storedApiKey);
+    } else {
+      // Show API key dialog if no API key is found
+      setApiKeyDialogOpen(true);
+    }
 
-    // Fetch conversations
-    fetchConversations();
+    // Load conversations from local storage
+    const storedConversations = localStorage.getItem(CONVERSATIONS_STORAGE_KEY);
+    if (storedConversations) {
+      try {
+        setConversations(JSON.parse(storedConversations));
+      } catch (error) {
+        console.error('Error parsing stored conversations:', error);
+        // Initialize with empty array if parsing fails
+        setConversations([]);
+      }
+    }
   }, []);
 
-  const fetchConversations = () => {
-    fetch('/api/conversations')
-      .then(res => res.json())
-      .then(data => {
-        setConversations(data);
-      })
-      .catch(error => console.error('Error fetching conversations:', error));
-  };
-
-  const loadConversation = async (conversationId) => {
-    try {
-      const response = await fetch(`/api/conversations/${conversationId}`);
-      if (!response.ok) throw new Error('Failed to load conversation');
-      
-      const data = await response.json();
-      setMessages(data.messages);
-      setSelectedAgent(data.agentId);
-      setSelectedConversation(conversationId);
-      if (isMobile) setDrawerOpen(false);
-    } catch (error) {
-      console.error('Error loading conversation:', error);
-      alert('Failed to load conversation');
+  // Save conversations to local storage whenever they change
+  useEffect(() => {
+    if (conversations.length > 0) {
+      localStorage.setItem(CONVERSATIONS_STORAGE_KEY, JSON.stringify(conversations));
     }
-  };
-
-  const startNewConversation = () => {
-    setMessages([]);
-    setSelectedConversation(null);
-    if (isMobile) setDrawerOpen(false);
-  };
+  }, [conversations]);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -100,49 +103,172 @@ function App() {
     scrollToBottom();
   }, [messages]);
 
+  const handleSaveApiKey = () => {
+    if (tempApiKey.trim()) {
+      localStorage.setItem(API_KEY_STORAGE_KEY, tempApiKey);
+      setApiKey(tempApiKey);
+      setApiKeyDialogOpen(false);
+      showSnackbar('API key saved successfully', 'success');
+    } else {
+      showSnackbar('Please enter a valid API key', 'error');
+    }
+  };
+
+  const handleChangeApiKey = () => {
+    setTempApiKey(apiKey);
+    setApiKeyDialogOpen(true);
+  };
+
+  const showSnackbar = (message, severity = 'info') => {
+    setSnackbarMessage(message);
+    setSnackbarSeverity(severity);
+    setSnackbarOpen(true);
+  };
+
+  const handleCloseSnackbar = () => {
+    setSnackbarOpen(false);
+  };
+
+  const loadConversation = (conversationId) => {
+    const conversation = conversations.find(conv => conv.id === conversationId);
+    if (conversation) {
+      setMessages(conversation.messages);
+      setSelectedAgent(conversation.agentId);
+      setSelectedConversation(conversationId);
+      if (isMobile) setDrawerOpen(false);
+    } else {
+      showSnackbar('Failed to load conversation', 'error');
+    }
+  };
+
+  const startNewConversation = () => {
+    setMessages([]);
+    setSelectedConversation(null);
+    if (isMobile) setDrawerOpen(false);
+  };
+
+  const saveConversation = (newMessages, agentId) => {
+    const timestamp = new Date().toISOString();
+    const userMessages = newMessages.filter(msg => msg.role === 'user');
+    const preview = userMessages.length > 0 ? userMessages[userMessages.length - 1].content : '';
+    
+    const newConversation = {
+      id: `conversation-${Date.now()}`,
+      timestamp,
+      agentId,
+      preview,
+      agent: availableAgents.find(a => a.id === agentId)?.name || 'Unknown Agent',
+      messages: newMessages
+    };
+
+    // If we're updating an existing conversation
+    if (selectedConversation) {
+      setConversations(conversations.map(conv => 
+        conv.id === selectedConversation ? 
+          { ...conv, messages: newMessages, timestamp, preview } : 
+          conv
+      ));
+      return;
+    }
+
+    // Otherwise create a new conversation
+    setConversations([newConversation, ...conversations]);
+    setSelectedConversation(newConversation.id);
+  };
+
   const handleSend = async () => {
-    if (!input.trim() || !selectedAgent) return;
+    if (!input.trim() || !selectedAgent || !apiKey) {
+      if (!apiKey) {
+        setApiKeyDialogOpen(true);
+        return;
+      }
+      return;
+    }
     
     const newMessage = { role: 'user', content: input };
+    const updatedMessages = [...messages, newMessage];
+    setMessages(updatedMessages);
     setInput('');
     setLoading(true);
 
     try {
-      const response = await fetch('/api/chat', {
+      // Get the agent's system prompt
+      const systemPrompt = agentPrompts[selectedAgent]?.systemPrompt;
+      
+      // Build the messages array for the OpenAI API
+      let chatMessages = [
+        { role: "system", content: systemPrompt },
+        ...messages,
+        newMessage
+      ];
+      
+      // Call OpenAI Chat API directly from the frontend
+      const response = await fetch('https://api.openai.com/v1/chat/completions', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
-          message: input,
-          messages: messages,  // Backend will add system prompt
-          agentId: selectedAgent
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${apiKey}`,
+        },
+        body: JSON.stringify({
+          model: "o1",
+          messages: chatMessages,
         }),
       });
       
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to send message');
+        throw new Error(errorData.error?.message || 'Failed to send message');
       }
       
       const data = await response.json();
       
-      // Only add user message and assistant reply to the UI
-      setMessages([
-        ...messages,
-        newMessage,
-        { role: 'assistant', content: data.reply }
-      ]);
-
-      // Refresh conversations list after sending a message
-      fetchConversations();
+      if (!data?.choices?.[0]?.message?.content) {
+        throw new Error('Invalid response from OpenAI');
+      }
+      
+      const assistantReply = data.choices[0].message.content;
+      const finalMessages = [...updatedMessages, { role: 'assistant', content: assistantReply }];
+      
+      // Update messages state
+      setMessages(finalMessages);
+      
+      // Save conversation to local storage
+      saveConversation(finalMessages, selectedAgent);
+      
     } catch (error) {
       console.error('Error sending message:', error);
-      alert('Failed to send message: ' + error.message);
+      showSnackbar(`Error: ${error.message}`, 'error');
+      
+      // If the error is related to authentication, prompt for a new API key
+      if (error.message.includes('authentication') || error.message.includes('API key')) {
+        setApiKeyDialogOpen(true);
+      }
     }
+    
     setLoading(false);
   };
 
+  const handleBackupConversations = () => {
+    try {
+      const dataStr = JSON.stringify(conversations, null, 2);
+      const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+      
+      const exportFileDefaultName = `qhph-conversations-backup-${new Date().toISOString().slice(0, 10)}.json`;
+      
+      const linkElement = document.createElement('a');
+      linkElement.setAttribute('href', dataUri);
+      linkElement.setAttribute('download', exportFileDefaultName);
+      linkElement.click();
+      
+      showSnackbar('Conversations backed up successfully', 'success');
+    } catch (error) {
+      console.error('Error backing up conversations:', error);
+      showSnackbar('Failed to backup conversations', 'error');
+    }
+  };
+
   const getCurrentAgent = () => {
-    return agents.find(agent => agent.id === selectedAgent);
+    return availableAgents.find(agent => agent.id === selectedAgent);
   };
 
   const formatTimestamp = (timestamp) => {
@@ -222,7 +348,7 @@ function App() {
                   }
                 }}
               >
-                {agents.map(agent => (
+                {availableAgents.map(agent => (
                   <MenuItem key={agent.id} value={agent.id}>
                     {agent.name}
                   </MenuItem>
@@ -236,6 +362,11 @@ function App() {
                 </IconButton>
               </Tooltip>
             )}
+            <Tooltip title="Change API Key">
+              <IconButton color="inherit" onClick={handleChangeApiKey}>
+                <KeyIcon />
+              </IconButton>
+            </Tooltip>
           </Box>
         </Toolbar>
       </AppBar>
@@ -268,12 +399,23 @@ function App() {
             display: 'flex',
             flexDirection: 'column'
           }}>
-            <ListItem>
+            <Box sx={{ 
+              display: 'flex', 
+              justifyContent: 'space-between', 
+              alignItems: 'center',
+              px: 2,
+              py: 1
+            }}>
               <ListItemButton onClick={startNewConversation}>
                 <AddIcon sx={{ mr: 1 }} />
                 <ListItemText primary="New Conversation" />
               </ListItemButton>
-            </ListItem>
+              <Tooltip title="Backup Conversations">
+                <IconButton onClick={handleBackupConversations}>
+                  <DownloadIcon />
+                </IconButton>
+              </Tooltip>
+            </Box>
             <Divider />
             <List sx={{ flexGrow: 1, overflow: 'auto' }}>
               {conversations.map((conv) => (
@@ -376,7 +518,7 @@ function App() {
                 <TextField
                   fullWidth
                   variant="outlined"
-                  placeholder={selectedAgent ? "Type your message..." : "Please select an agent first"}
+                  placeholder={apiKey ? "Type your message..." : "Please set your OpenAI API key first"}
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
                   onKeyPress={(e) => {
@@ -385,7 +527,7 @@ function App() {
                       handleSend();
                     }
                   }}
-                  disabled={!selectedAgent || loading}
+                  disabled={!apiKey || loading}
                   multiline
                   maxRows={4}
                   sx={{
@@ -397,7 +539,7 @@ function App() {
                 <Button
                   variant="contained"
                   onClick={handleSend}
-                  disabled={!selectedAgent || loading}
+                  disabled={!apiKey || loading}
                   sx={{
                     borderRadius: 2,
                     minWidth: '50px',
@@ -412,6 +554,46 @@ function App() {
           </Paper>
         </Container>
       </Box>
+
+      {/* API Key Dialog */}
+      <Dialog open={apiKeyDialogOpen} onClose={() => setApiKeyDialogOpen(false)}>
+        <DialogTitle>OpenAI API Key</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Please enter your OpenAI API key to use this application. Your key will be stored locally in your browser and never sent to our servers.
+          </DialogContentText>
+          <TextField
+            autoFocus
+            margin="dense"
+            label="API Key"
+            type="password"
+            fullWidth
+            variant="outlined"
+            value={tempApiKey}
+            onChange={(e) => setTempApiKey(e.target.value)}
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setApiKeyDialogOpen(false)} color="primary">
+            Cancel
+          </Button>
+          <Button onClick={handleSaveApiKey} color="primary" variant="contained">
+            Save
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Snackbar for notifications */}
+      <Snackbar 
+        open={snackbarOpen} 
+        autoHideDuration={6000} 
+        onClose={handleCloseSnackbar}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+      >
+        <Alert onClose={handleCloseSnackbar} severity={snackbarSeverity} sx={{ width: '100%' }}>
+          {snackbarMessage}
+        </Alert>
+      </Snackbar>
     </Box>
   );
 }
