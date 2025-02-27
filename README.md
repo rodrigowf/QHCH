@@ -93,6 +93,7 @@ This project is open-source under the **MIT License**. You are free to use, modi
 ## Acknowledgments
 
 - This theory builds upon ideas from quantum mechanics (e.g., superposition, entanglement), theories of consciousness (like Penrose-Hameroff's Orch-OR, the holographic brain principle), and philosophies of mind. The formulation of QHPH was inspired by bridging gaps between these disciplines.  
+- This was also large inspired and based upon Orch-OR theory by Stuart Hameroff and Sir Roger Penrose.
 - Thanks to anyone who engages with this project. Your interest and feedback help refine the hypothesis and its presentation.
 
 ## FAQ
