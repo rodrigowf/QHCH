@@ -14,9 +14,9 @@ app.use(bodyParser.json());
 // Serve static files from React build (if deployed)
 app.use(express.static(path.join(__dirname, 'client/build')));
 
-// Load QQSH.md content
-const qqshPath = path.join(__dirname, '..', 'QQSH.md');
-const qqshContent = fs.readFileSync(qqshPath, 'utf8');
+// Load QHPH.md content
+const qhphPath = path.join(__dirname, '..', 'QHPH.md');
+const qhphContent = fs.readFileSync(qhphPath, 'utf8');
 
 // Function to process prompt includes recursively
 const processPromptIncludes = (promptContent, basePath, processedFiles = new Set()) => {
@@ -52,14 +52,14 @@ const processPromptIncludes = (promptContent, basePath, processedFiles = new Set
 // Load and prepare agent prompts
 const agents = {
   specialist: {
-    name: 'QQSH Specialist',
-    description: 'A PhD physicist and neurobiologist specialized in QQSH hypothesis',
-    promptPath: path.join(__dirname, '..', 'QQSH_Specialist_prompt.txt')
+    name: 'QHPH Specialist',
+    description: 'A PhD physicist and neurobiologist specialized in QHPH hypothesis',
+    promptPath: path.join(__dirname, '..', 'QHPH_Specialist_prompt.txt')
   },
   sage: {
-    name: 'QQSH Sage',
-    description: 'A mystic hermetic/hindu sage with deep understanding of QQSH',
-    promptPath: path.join(__dirname, '..', 'QQSH_sage_prompt.txt')
+    name: 'QHPH Sage',
+    description: 'A mystic hermetic/hindu sage with deep understanding of QHPH',
+    promptPath: path.join(__dirname, '..', 'QHPH_sage_prompt.txt')
   }
 };
 
@@ -71,12 +71,12 @@ for (const agent of Object.values(agents)) {
 }
 
 // Load sage addendum if it exists
-const sageAddendumPath = path.join(__dirname, '..', 'QQSH_sage_addendum.txt');
+const sageAddendumPath = path.join(__dirname, '..', 'QHPH_sage_addendum.txt');
 let sageAddendumContent = '';
 try {
   sageAddendumContent = fs.readFileSync(sageAddendumPath, 'utf8');
 } catch (error) {
-  console.warn('QQSH_sage_addendum.txt not found, continuing without it');
+  console.warn('QHPH_sage_addendum.txt not found, continuing without it');
 }
 
 // GET endpoint to get available agents
