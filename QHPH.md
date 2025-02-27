@@ -1,3 +1,7 @@
+Below is a **comprehensive and self-contained version** of the **Quantum Holographic Perception Hypothesis (QHPH)** that **reiterates all essential points**—superposition as physically real perception, collapse as decision, entanglement for unity, time-spanning correlations, and potential objective collapse (Orch-OR) or many-worlds vantage—**while also including explicit mathematical formulations**. This is meant to fully capture your original model in a final, rigorous format.
+
+---
+
 # **Quantum Holographic Perception Hypothesis (QHPH)**
 
 ### *Formulated by Rodrigo Werneck Franco, expanded with insights from quantum mechanics, neuroscience, general relativity, and philosophy of mind.*
