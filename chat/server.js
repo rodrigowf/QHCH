@@ -27,7 +27,13 @@ const processPromptIncludes = (promptContent, basePath, processedFiles = new Set
 
   while ((matches = includeRegex.exec(promptContent)) !== null) {
     const [fullMatch, filename] = matches;
-    const includePath = path.join(basePath, filename);
+    // First try to find the file in the basePath
+    let includePath = path.join(basePath, filename);
+    
+    // If file doesn't exist in basePath, try the root directory
+    if (!fs.existsSync(includePath)) {
+      includePath = path.join(__dirname, '..', filename);
+    }
 
     // Prevent infinite recursion
     if (processedFiles.has(includePath)) {
@@ -39,7 +45,7 @@ const processPromptIncludes = (promptContent, basePath, processedFiles = new Set
       const includeContent = fs.readFileSync(includePath, 'utf8');
       processedFiles.add(includePath);
       // Recursively process includes in the included file
-      const processedInclude = processPromptIncludes(includeContent, basePath, processedFiles);
+      const processedInclude = processPromptIncludes(includeContent, path.dirname(includePath), processedFiles);
       processedContent = processedContent.replace(fullMatch, processedInclude);
     } catch (error) {
       console.warn(`Failed to load include file ${filename}, leaving placeholder: ${error.message}`);
@@ -54,12 +60,12 @@ const agents = {
   specialist: {
     name: 'QHPH Specialist',
     description: 'A PhD physicist and neurobiologist specialized in QHPH hypothesis',
-    promptPath: path.join(__dirname, '..', 'QHPH_Specialist_prompt.txt')
+    promptPath: path.join(__dirname, 'QHPH_Specialist_prompt.txt')
   },
   sage: {
     name: 'QHPH Sage',
     description: 'A mystic hermetic/hindu sage with deep understanding of QHPH',
-    promptPath: path.join(__dirname, '..', 'QHPH_sage_prompt.txt')
+    promptPath: path.join(__dirname, 'QHPH_sage_prompt.txt')
   }
 };
 
@@ -71,7 +77,7 @@ for (const agent of Object.values(agents)) {
 }
 
 // Load sage addendum if it exists
-const sageAddendumPath = path.join(__dirname, '..', 'QHPH_sage_addendum.txt');
+const sageAddendumPath = path.join(__dirname, 'QHPH_sage_addendum.txt');
 let sageAddendumContent = '';
 try {
   sageAddendumContent = fs.readFileSync(sageAddendumPath, 'utf8');
