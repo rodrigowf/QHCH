@@ -67,6 +67,26 @@ header {
     font-weight: 300;
 }
 
+.links {
+    margin-top: 1rem;
+    font-size: 1rem;
+}
+
+.links a {
+    color: white;
+    text-decoration: none;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    transition: all var(--transition-speed);
+    opacity: 0.9;
+}
+
+.links a:hover {
+    background: rgba(255, 255, 255, 0.2);
+    opacity: 1;
+    text-decoration: underline;
+}
+
 /* Table of Contents Styling */
 nav#toc {
     grid-area: nav;
