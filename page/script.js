@@ -1,3 +1,5 @@
+const QHPH_PATH = "https://github.com/rodrigowf/QHPH/blob/main/QHPH.md";
+
 // Configure marked options
 marked.use({
     mangle: false,
@@ -225,10 +227,14 @@ async function loadMarkdown() {
     try {
         console.log('Fetching QHPH.md');
         const timestamp = new Date().getTime();
-        const response = await fetch(`/QHPH.md?t=${timestamp}`);
+        let response = await fetch(`/QHPH.md?t=${timestamp}`);
         
         if (!response.ok) {
-            throw new Error(`Failed to load markdown file: ${response.status} ${response.statusText}`);
+            response = await fetch(`${QHPH_PATH}?t=${timestamp}`); // Fallback to the version at github
+
+            if (!response.ok) {
+                throw new Error(`Failed to load markdown file: ${response.status} ${response.statusText}`);
+            }
         }
         
         console.log('Markdown file fetched successfully');
