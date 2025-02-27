@@ -227,14 +227,10 @@ async function loadMarkdown() {
     try {
         console.log('Fetching QHPH.md');
         const timestamp = new Date().getTime();
-        let response = await fetch(`/QHPH.md?t=${timestamp}`);
+        const response = await fetch(`${QHPH_PATH}?t=${timestamp}`);
         
         if (!response.ok) {
-            response = await fetch(`${QHPH_PATH}?t=${timestamp}`); // Fallback to the version at github
-
-            if (!response.ok) {
-                throw new Error(`Failed to load markdown file: ${response.status} ${response.statusText}`);
-            }
+            throw new Error(`Failed to load markdown file: ${response.status} ${response.statusText}`);
         }
         
         console.log('Markdown file fetched successfully');
