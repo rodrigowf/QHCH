@@ -1,4 +1,4 @@
-const QHPH_PATH = "https://github.com/rodrigowf/QHPH/blob/main/QHPH.md";
+const QHPH_PATH = "https://raw.githubusercontent.com/rodrigowf/QHPH/refs/heads/main/QHPH.md";
 
 // Configure marked options
 marked.use({
