@@ -239,7 +239,7 @@ export const availableAgents = [
   },
   {
     id: 'sage',
-    name: 'QHPH Sage',
+    name: 'QHPH Mystic Sage',
     description: 'A mystic hermetic/hindu Sage with deep understanding of QHPH'
   }
 ]; 
