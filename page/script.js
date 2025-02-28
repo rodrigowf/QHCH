@@ -1,8 +1,94 @@
 const QHPH_PATH = "https://raw.githubusercontent.com/rodrigowf/QHPH/refs/heads/main/QHPH.md";
 
+// Local storage keys
+const DARK_MODE_STORAGE_KEY = 'qhph_dark_mode';
+
 // Necessary variables for the Chat app to integrate properly:
 window.isEmbedded = true;
 window.onChatToggle = () => {};
+window.isDarkMode = false;
+
+// Function to load and set dark mode based on local storage
+function initializeDarkMode() {
+  const savedMode = localStorage.getItem(DARK_MODE_STORAGE_KEY);
+  const isDarkMode = savedMode !== null ? JSON.parse(savedMode) : true; // Default to dark mode
+  
+  if (isDarkMode) {
+    document.body.classList.add('dark-mode');
+  } else {
+    document.body.classList.remove('dark-mode');
+  }
+
+  window.isDarkMode = isDarkMode;
+  
+  return isDarkMode;
+}
+
+// Function to toggle chat visibility
+function toggleChat() {
+    const chatRoot = document.getElementById('chat-root');
+    const darkModeToggle = document.getElementById('dark-mode-toggle');
+    const toggleButton = document.getElementById('chat-toggle');
+    const isVisible = chatRoot.style.display === 'block';
+
+    if (isVisible) { // Deactivating Chat (going back to main)
+        chatRoot.style.opacity = '0';
+        chatRoot.style.transform = 'translateY(20px)';
+        setTimeout(() => {
+            chatRoot.style.display = 'none';
+        }, 300);
+        if (window.isDarkMode) {
+            document.body.classList.add('dark-mode');
+        } else {
+            document.body.classList.remove('dark-mode');
+        }
+        document.body.classList.remove('chat-open');
+        toggleButton.classList.remove('active');
+        toggleButton.innerHTML = '<span class="material-icons">chat</span> Open Chat'; // Changed to use material icons
+        darkModeToggle.style.display = 'block';
+        
+        window.onChatToggle(false);
+    } else { // Activating Chat (load Chat built react app)
+        chatRoot.style.display = 'block';
+        // Force reflow
+        chatRoot.offsetHeight;
+        chatRoot.style.opacity = '1';
+        chatRoot.style.transform = 'translateY(0)';
+        document.body.classList.add('chat-open');
+        toggleButton.classList.add('active');
+        toggleButton.innerHTML = '<span class="material-icons">close</span> Close Chat'; // Changed to use material icons
+        darkModeToggle.style.display = 'none';
+        window.onChatToggle(true);
+    }
+}
+
+// Function to synchronize dark mode between page and chat
+function syncDarkMode() {
+    const isDarkMode = document.body.classList.contains('dark-mode');
+    localStorage.setItem(DARK_MODE_STORAGE_KEY, JSON.stringify(isDarkMode));
+    
+    // Update the chat root background dynamically
+    const chatRoot = document.getElementById('chat-root');
+    if (chatRoot) {
+        chatRoot.style.backgroundColor = isDarkMode ? '#161616' : 'white';
+    }
+    
+    // Update dark mode icon using material icons
+    const darkModeIcon = document.getElementById('dark-mode-icon');
+    if (darkModeIcon) {
+        darkModeIcon.innerHTML = isDarkMode ? '<span class="material-icons">light_mode</span>' : '<span class="material-icons">dark_mode</span>';
+    }
+
+    window.isDarkMode = isDarkMode;
+    
+    return isDarkMode;
+}
+
+// Update the toggleDarkMode function to use syncDarkMode
+function toggleDarkMode() {
+    document.body.classList.toggle('dark-mode');
+    return syncDarkMode();
+}
 
 // Configure marked options
 marked.use({
@@ -248,58 +334,47 @@ async function processMarkdown(content) {
     }
 }
 
-// Function to toggle chat visibility
-function toggleChat() {
-    const chatRoot = document.getElementById('chat-root');
-    const toggleButton = document.getElementById('chat-toggle');
-    const isVisible = chatRoot.style.display === 'block';
-
-    if (isVisible) {
-        chatRoot.style.opacity = '0';
-        chatRoot.style.transform = 'translateY(20px)';
-        setTimeout(() => {
-            chatRoot.style.display = 'none';
-        }, 300);
-        document.body.classList.remove('chat-open');
-        toggleButton.classList.remove('active');
-        toggleButton.textContent = 'Open Chat';
-        window.onChatToggle(false);
-    } else {
-        chatRoot.style.display = 'block';
-        // Force reflow
-        chatRoot.offsetHeight;
-        chatRoot.style.opacity = '1';
-        chatRoot.style.transform = 'translateY(0)';
-        document.body.classList.add('chat-open');
-        toggleButton.classList.add('active');
-        toggleButton.textContent = 'Close Chat';
-        window.onChatToggle(true);
-    }
-}
-
 // Update the DOMContentLoaded event handler
 document.addEventListener('DOMContentLoaded', () => {
     console.log('DOM loaded, starting application');
     
-    // Remove any existing toggle button to prevent duplicates
-    const existingButton = document.getElementById('chat-toggle');
-    if (existingButton) {
-        existingButton.remove();
-    }
+    // Initialize dark mode
+    const isDarkMode = initializeDarkMode();
+    syncDarkMode(); // Ensure everything is synchronized
     
     // Add the toggle button
     const toggleButton = document.createElement('button');
     toggleButton.id = 'chat-toggle';
-    toggleButton.textContent = 'Open Chat';
+    toggleButton.innerHTML = '<span class="material-icons">chat</span> Open Chat'; // Changed to use material icons
     toggleButton.onclick = toggleChat;
     document.body.appendChild(toggleButton);
+
+    // Create dark mode toggle button
+    const darkModeToggle = document.createElement('button');
+    darkModeToggle.id = 'dark-mode-toggle';
+    darkModeToggle.innerHTML = `<span class="material-icons" id="dark-mode-icon">${isDarkMode ? 'light_mode' : 'dark_mode'}</span>`;
+    darkModeToggle.title = isDarkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode';
+    darkModeToggle.onclick = toggleDarkMode;
+    document.body.appendChild(darkModeToggle);
 
     // Style chat root for transitions
     const chatRoot = document.getElementById('chat-root');
     if (chatRoot) {
-        chatRoot.style.transition = 'opacity 300ms, transform 300ms';
+        chatRoot.style.transition = 'opacity 300ms, transform 300ms, background-color 300ms';
         chatRoot.style.opacity = '0';
+        chatRoot.style.backgroundColor = isDarkMode ? '#161616' : 'white';
     }
+    
+    // Listen for changes in localStorage from the chat app
+    window.addEventListener('storage', (event) => {
+        if (event.key === DARK_MODE_STORAGE_KEY) {
+            const isDarkMode = JSON.parse(event.newValue);
+            if (isDarkMode !== document.body.classList.contains('dark-mode')) {
+                document.body.classList.toggle('dark-mode');
+                syncDarkMode();
+            }
+        }
+    });
     
     // Load markdown immediately
     loadMarkdown();

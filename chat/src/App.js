@@ -68,18 +68,80 @@ function App() {
   const [snackbarSeverity, setSnackbarSeverity] = useState('success');
   const [darkMode, setDarkMode] = useState(() => {
     const savedMode = localStorage.getItem(DARK_MODE_STORAGE_KEY);
-    return savedMode ? JSON.parse(savedMode) : false;
+    return savedMode !== null ? JSON.parse(savedMode) : true; // Default to dark mode
   });
   
   const theme = createTheme({
     palette: {
       mode: darkMode ? 'dark' : 'light',
       primary: {
-        main: '#2196f3',
+        main: darkMode ? '#1565c0' : '#2196f3',
+        light: darkMode ? '#1976d2' : '#64b5f6',
+        dark: darkMode ? '#0d47a1' : '#1976d2',
       },
       background: {
-        default: darkMode ? '#121212' : '#f5f5f5',
+        default: darkMode ? '#0a0a0a' : '#f5f5f5',
         paper: darkMode ? '#1e1e1e' : '#ffffff',
+        darker: darkMode ? '#161616' : '#f0f0f0',
+      },
+      grey: {
+        800: darkMode ? '#2d2d2d' : '#424242',
+        900: darkMode ? '#212121' : '#212121',
+      },
+    },
+    components: {
+      MuiCssBaseline: {
+        styleOverrides: {
+          body: {
+            backgroundColor: darkMode ? '#1e1e1e' : '#f5f5f5',
+            scrollbarColor: darkMode ? '#424242 #1a1a1a' : '#bdbdbd #f5f5f5',
+            '&::-webkit-scrollbar': {
+              width: '8px',
+              height: '8px',
+            },
+            '&::-webkit-scrollbar-track': {
+              background: darkMode ? '#1a1a1a' : '#f5f5f5',
+              borderRadius: '4px',
+            },
+            '&::-webkit-scrollbar-thumb': {
+              background: darkMode ? '#424242' : '#bdbdbd',
+              borderRadius: '4px',
+              '&:hover': {
+                background: darkMode ? '#616161' : '#9e9e9e',
+              },
+            },
+          },
+        },
+      },
+      MuiDrawer: {
+        styleOverrides: {
+          paper: {
+            backgroundColor: darkMode ? '#161616' : '#ffffff',
+            borderRight: `1px solid ${darkMode ? '#2d2d2d' : '#e0e0e0'}`,
+          },
+        },
+      },
+      MuiSelect: {
+        styleOverrides: {
+          select: {
+            color: darkMode ? '#fff' : 'inherit',
+          },
+        },
+      },
+      MuiListItemButton: {
+        styleOverrides: {
+          root: {
+            '&.Mui-selected': {
+              backgroundColor: darkMode ? '#2d2d2d' : '#e3f2fd',
+              '&:hover': {
+                backgroundColor: darkMode ? '#333333' : '#bbdefb',
+              },
+            },
+            '&:hover': {
+              backgroundColor: darkMode ? '#252525' : '#f5f5f5',
+            },
+          },
+        },
       },
     },
   });
@@ -90,6 +152,7 @@ function App() {
   const toggleDarkMode = () => {
     const newMode = !darkMode;
     setDarkMode(newMode);
+    window.isDarkMode = newMode;
     localStorage.setItem(DARK_MODE_STORAGE_KEY, JSON.stringify(newMode));
   };
 
@@ -104,6 +167,7 @@ function App() {
     if (isMobile) {
       setDrawerOpen(false);
     } else if (appOpen) {
+      setDarkMode(window.isDarkMode);
       setDrawerOpen(true);
     }
   }, [isMobile, appOpen]);
@@ -334,28 +398,37 @@ function App() {
         marginBottom: isMobile ? 2 : 0,
         minWidth: 190, 
         '& .MuiOutlinedInput-root': {
-          bgcolor: theme.palette.background.paper,
+          bgcolor: darkMode ? '#2d2d2d' : theme.palette.background.paper,
           borderRadius: 1,
           '& fieldset': {
-            borderColor: isMobile ? theme.palette.divider : 'rgba(255, 255, 255, 0.5)',
+            borderColor: 'transparent',
+          },
+          '&:hover fieldset': {
+            borderColor: 'rgba(255, 255, 255, 0.2)',
+          },
+          '&.Mui-focused fieldset': {
+            borderColor: 'rgba(255, 255, 255, 0.5)',
           }
         },
+        '& .MuiSelect-select': {
+          color: darkMode ? '#fff' : theme.palette.text.primary,
+        },
         '& .MuiInputLabel-root': {
-          color: theme.palette.mode === 'dark' ? theme.palette.text.primary : 'white',
+          color: darkMode ? '#fff' : theme.palette.text.primary,
           '&.Mui-focused': {
-            color: theme.palette.mode === 'dark' ? theme.palette.text.primary : 'white'
+            color: darkMode ? '#fff' : theme.palette.text.primary,
           }
         },
         '& .MuiInputLabel-shrink': {
           transform: 'translate(14px, -6px) scale(0.75)',
           '&:not(.Mui-focused)': {
-            color: isMobile ? theme.palette.text.primary : 'rgba(255, 255, 255, 0.7)'
+            color: darkMode ? '#fff' : theme.palette.text.primary,
           }
         }
       }}>
         <InputLabel sx={{ 
           '&.MuiInputLabel-shrink': {
-            background: isMobile ? theme.palette.background.paper : theme.palette.primary.main,
+            background: darkMode ? '#2d2d2d' : theme.palette.primary.main,
             paddingX: '4px'
           }
         }}>Select Agent</InputLabel>
@@ -366,7 +439,10 @@ function App() {
           MenuProps={{
             PaperProps: {
               sx: {
-                maxHeight: 300
+                bgcolor: darkMode ? '#2d2d2d' : theme.palette.background.paper,
+                '& .MuiMenuItem-root': {
+                  color: darkMode ? '#fff' : theme.palette.text.primary,
+                }
               }
             }
           }}
@@ -407,13 +483,13 @@ function App() {
         height: '100vh',
         display: 'flex',
         flexDirection: 'column',
-        bgcolor: theme.palette.grey[100]
+        bgcolor: darkMode ? '#161616' : theme.palette.grey[100]
       }}>
         <AppBar 
           position="fixed" 
           sx={{ 
-            bgcolor: theme.palette.primary.main,
-            boxShadow: 3,
+            bgcolor: darkMode ? '#0d47a1' : theme.palette.primary.main,
+            boxShadow: darkMode ? 'none' : 3,
             zIndex: (theme) => theme.zIndex.drawer + 1
           }}
         >
@@ -439,7 +515,11 @@ function App() {
         </AppBar>
         <Toolbar /> {/* Add spacing for the fixed AppBar */}
 
-        <Box sx={{ display: 'flex', flexGrow: 1 }}>
+        <Box sx={{ 
+          display: 'flex', 
+          flexGrow: 1,
+          bgcolor: darkMode ? '#161616' : theme.palette.background.default 
+        }}>
           <Drawer
             variant={isMobile ? 'temporary' : 'persistent'}
             open={drawerOpen}
@@ -450,7 +530,7 @@ function App() {
               '& .MuiDrawer-paper': {
                 width: drawerWidth,
                 boxSizing: 'border-box',
-                bgcolor: 'white',
+                bgcolor: darkMode ? '#161616' : 'white',
                 top: { xs: 0, sm: 64 }, // 64px is the default AppBar height
                 height: { xs: '100%', sm: 'calc(100% - 64px)' }, // Subtract AppBar height on desktop
                 '& > .MuiToolbar-root': { // Hide the toolbar spacer on desktop
@@ -458,33 +538,64 @@ function App() {
                 }
               },
             }}
+            PaperProps={{
+              sx: {
+                bgcolor: darkMode ? '#161616' : 'white',
+              }
+            }}
           >
             {isMobile && <Toolbar />} {/* Only show toolbar spacer on mobile */}
             <Box sx={{ 
               overflow: 'auto',
-              height: '100%', // Make sure the Box takes full height
+              height: '100%',
               display: 'flex',
-              flexDirection: 'column'
+              flexDirection: 'column',
+              bgcolor: darkMode ? '#161616' : theme.palette.background.paper,
             }}>
               <Box sx={{ 
                 display: 'flex', 
                 justifyContent: 'space-between', 
                 alignItems: 'center',
                 px: 2,
-                py: 1
+                py: 1,
+                borderBottom: 1,
+                borderColor: 'divider',
               }}>
-                <ListItemButton onClick={startNewConversation}>
+                <ListItemButton 
+                  onClick={startNewConversation}
+                  sx={{
+                    borderRadius: 1,
+                    '&:hover': {
+                      bgcolor: darkMode ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.04)',
+                    }
+                  }}
+                >
                   <AddIcon sx={{ mr: 1 }} />
                   <ListItemText primary="New Conversation" />
                 </ListItemButton>
                 <Tooltip title="Backup Conversations">
-                  <IconButton onClick={handleBackupConversations}>
+                  <IconButton 
+                    onClick={handleBackupConversations}
+                    sx={{
+                      color: theme.palette.text.secondary,
+                      '&:hover': {
+                        color: theme.palette.text.primary,
+                      }
+                    }}
+                  >
                     <DownloadIcon />
                   </IconButton>
                 </Tooltip>
               </Box>
-              <Divider />
-              <List sx={{ flexGrow: 1, overflow: 'auto' }}>
+              <List sx={{ 
+                flexGrow: 1, 
+                overflow: 'auto',
+                '& .MuiListItemButton-root': {
+                  borderRadius: 1,
+                  mx: 1,
+                  mb: 0.5,
+                }
+              }}>
                 {conversations.map((conv) => (
                   <ListItem key={conv.id} disablePadding>
                     <ListItemButton 
@@ -494,26 +605,38 @@ function App() {
                         display: 'block',
                         py: 1,
                         px: 2,
-                        '&.Mui-selected': {
-                          bgcolor: theme.palette.primary.light,
-                          color: theme.palette.primary.contrastText,
-                        }
                       }}
                     >
-                      <Typography variant="subtitle2" sx={{ fontWeight: 'bold' }}>
+                      <Typography 
+                        variant="subtitle2" 
+                        sx={{ 
+                          fontWeight: 600,
+                          color: theme.palette.text.primary,
+                        }}
+                      >
                         {conv.agent}
                       </Typography>
-                      <Typography variant="body2" sx={{ 
-                        color: 'text.secondary',
-                        overflow: 'hidden',
-                        textOverflow: 'ellipsis',
-                        display: '-webkit-box',
-                        WebkitLineClamp: 2,
-                        WebkitBoxOrient: 'vertical',
-                      }}>
+                      <Typography 
+                        variant="body2" 
+                        sx={{ 
+                          color: theme.palette.text.secondary,
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis',
+                          display: '-webkit-box',
+                          WebkitLineClamp: 2,
+                          WebkitBoxOrient: 'vertical',
+                          mb: 0.5,
+                        }}
+                      >
                         {conv.preview}
                       </Typography>
-                      <Typography variant="caption" sx={{ color: 'text.secondary' }}>
+                      <Typography 
+                        variant="caption" 
+                        sx={{ 
+                          color: theme.palette.text.disabled,
+                          display: 'block',
+                        }}
+                      >
                         {formatTimestamp(conv.timestamp)}
                       </Typography>
                     </ListItemButton>
@@ -531,6 +654,7 @@ function App() {
             py: 3,
             gap: 2,
             height: 'calc(100vh - 60px)',
+            bgcolor: darkMode ? '#161616' : 'transparent',
             ...(isMobile && {
               padding: '12px',  // Reduce padding on mobile
               maxWidth: '100% !important', // Override Material-UI's maxWidth
@@ -543,7 +667,7 @@ function App() {
               overflow: 'hidden',
               boxShadow: 3,
               borderRadius: isMobile ? 1 : 2,
-              bgcolor: theme.palette.background.paper,
+              bgcolor: darkMode ? '#1e1e1e' : theme.palette.background.paper,
               height: '100%',
               overflowY: 'auto'
             }}>
@@ -565,19 +689,26 @@ function App() {
                     <Box sx={{
                       maxWidth: '80%',
                       bgcolor: msg.role === 'user' ? 
-                        theme.palette.primary.main : 
-                        theme.palette.mode === 'dark' ? 
-                          theme.palette.grey[800] : 
-                          theme.palette.grey[200],
-                      color: msg.role === 'user' || theme.palette.mode === 'dark' ? 
-                        theme.palette.primary.contrastText : 
+                        '#2196f3' : 
+                        darkMode ? 
+                          '#2d2d2d' : 
+                          'rgba(0, 0, 0, 0.05)',
+                      color: msg.role === 'user' ? 
+                        '#ffffff' : 
                         theme.palette.text.primary,
                       borderRadius: 2,
-                      px: 2,
-                      py: 1,
-                      boxShadow: 1
+                      px: 2.5,
+                      py: 1.5,
+                      boxShadow: darkMode ? 'none' : 1,
+                      border: msg.role !== 'user' && darkMode ? '1px solid rgba(255, 255, 255, 0.1)' : 'none'
                     }}>
-                      <Typography variant="body1" sx={{ whiteSpace: 'pre-wrap' }}>
+                      <Typography 
+                        variant="body1" 
+                        sx={{ 
+                          whiteSpace: 'pre-wrap',
+                          lineHeight: 1.6,
+                        }}
+                      >
                         {msg.content}
                       </Typography>
                     </Box>
@@ -588,9 +719,8 @@ function App() {
 
               <Box sx={{
                 p: 2,
-                borderTop: 1,
-                borderColor: 'divider',
-                bgcolor: theme.palette.background.paper
+                borderTop: `1px solid ${darkMode ? 'rgba(255, 255, 255, 0.1)' : theme.palette.divider}`,
+                bgcolor: darkMode ? '#161616' : theme.palette.background.paper,
               }}>
                 <Box sx={{
                   display: 'flex',
@@ -613,7 +743,23 @@ function App() {
                     maxRows={4}
                     sx={{
                       '& .MuiOutlinedInput-root': {
-                        borderRadius: 2
+                        borderRadius: 2,
+                        backgroundColor: darkMode ? '#2d2d2d' : 'rgba(0, 0, 0, 0.02)',
+                        '&:hover': {
+                          backgroundColor: darkMode ? '#333333' : 'rgba(0, 0, 0, 0.04)',
+                        },
+                        '&.Mui-focused': {
+                          backgroundColor: darkMode ? '#333333' : 'rgba(0, 0, 0, 0.06)',
+                        },
+                        '& fieldset': {
+                          borderColor: 'transparent',
+                        },
+                        '&:hover fieldset': {
+                          borderColor: darkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.2)',
+                        },
+                        '&.Mui-focused fieldset': {
+                          borderColor: darkMode ? 'rgba(255, 255, 255, 0.2)' : theme.palette.primary.main,
+                        }
                       }
                     }}
                   />
@@ -625,7 +771,11 @@ function App() {
                       borderRadius: 2,
                       minWidth: '50px',
                       height: '56px',
-                      boxShadow: 2
+                      boxShadow: darkMode ? 'none' : 2,
+                      bgcolor: '#2196f3',
+                      '&:hover': {
+                        bgcolor: '#1976d2',
+                      }
                     }}
                   >
                     {loading ? <CircularProgress size={24} color="inherit" /> : <SendIcon />}
@@ -637,10 +787,21 @@ function App() {
         </Box>
 
         {/* API Key Dialog */}
-        <Dialog open={apiKeyDialogOpen} onClose={() => setApiKeyDialogOpen(false)}>
+        <Dialog 
+          open={apiKeyDialogOpen} 
+          onClose={() => setApiKeyDialogOpen(false)}
+          PaperProps={{
+            sx: {
+              bgcolor: darkMode ? '#1e1e1e' : 'white',
+              color: darkMode ? 'white' : 'inherit',
+            }
+          }}
+        >
           <DialogTitle>OpenAI API Key</DialogTitle>
           <DialogContent>
-            <DialogContentText>
+            <DialogContentText
+              sx={{ color: darkMode ? 'rgba(255, 255, 255, 0.7)' : 'rgba(0, 0, 0, 0.6)' }}
+            >
               Please enter your OpenAI API key to use this application. Your key will be stored locally in your browser and never sent to our servers.
             </DialogContentText>
             <TextField
@@ -652,6 +813,20 @@ function App() {
               variant="outlined"
               value={tempApiKey}
               onChange={(e) => setTempApiKey(e.target.value)}
+              sx={{
+                '& .MuiOutlinedInput-root': {
+                  bgcolor: darkMode ? 'rgba(255, 255, 255, 0.05)' : 'transparent',
+                  '& fieldset': {
+                    borderColor: darkMode ? 'rgba(255, 255, 255, 0.2)' : 'rgba(0, 0, 0, 0.23)',
+                  },
+                },
+                '& .MuiInputLabel-root': {
+                  color: darkMode ? 'rgba(255, 255, 255, 0.7)' : 'rgba(0, 0, 0, 0.6)',
+                },
+                '& input': {
+                  color: darkMode ? 'white' : 'inherit',
+                }
+              }}
             />
           </DialogContent>
           <DialogActions>
@@ -671,7 +846,18 @@ function App() {
           onClose={handleCloseSnackbar}
           anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
         >
-          <Alert onClose={handleCloseSnackbar} severity={snackbarSeverity} sx={{ width: '100%' }}>
+          <Alert 
+            onClose={handleCloseSnackbar} 
+            severity={snackbarSeverity} 
+            sx={{ 
+              width: '100%',
+              bgcolor: darkMode ? '#2d2d2d' : undefined,
+              color: darkMode ? 'white' : undefined,
+              '& .MuiAlert-icon': {
+                color: darkMode ? 'white' : undefined,
+              }
+            }}
+          >
             {snackbarMessage}
           </Alert>
         </Snackbar>
