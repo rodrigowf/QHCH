@@ -53,8 +53,8 @@ function App() {
   const [selectedAgent, setSelectedAgent] = useState('specialist');
   const [conversations, setConversations] = useState([]);
   const [selectedConversation, setSelectedConversation] = useState(null);
-  const [drawerOpen, setDrawerOpen] = useState(true);
   const [apiKey, setApiKey] = useState('');
+  const [drawerOpen, setDrawerOpen] = useState(true);
   const [apiKeyDialogOpen, setApiKeyDialogOpen] = useState(false);
   const [tempApiKey, setTempApiKey] = useState('');
   const [snackbarOpen, setSnackbarOpen] = useState(false);
@@ -71,6 +71,12 @@ function App() {
     setAppOpen(isOpen);
     setKey && setApiKeyDialogOpen(isOpen)
   }
+
+  useEffect(() => {
+    if (isMobile || !appOpen) {
+      setDrawerOpen(false);
+    }
+  }, [isMobile, appOpen]);
 
   // Load API key and conversations from local storage on component mount
   useEffect(() => {
@@ -292,6 +298,71 @@ function App() {
     return new Date(timestamp).toLocaleString();
   };
 
+  const controls = (
+    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+      <FormControl variant="outlined" size="small" sx={{ 
+        marginBottom: isMobile ? 2 : 0,
+        minWidth: 190, 
+        '& .MuiOutlinedInput-root': {
+          bgcolor: 'white',
+          borderRadius: 1,
+          '& fieldset': {
+            borderColor: isMobile ? '#ccc': 'rgba(255, 255, 255, 0.5)',
+          }
+        },
+        '& .MuiInputLabel-root': {
+          color: 'white',
+          '&.Mui-focused': {
+            color: 'white'
+          }
+        },
+        '& .MuiInputLabel-shrink': {
+          transform: 'translate(14px, -6px) scale(0.75)',
+          '&:not(.Mui-focused)': {
+            color: isMobile ? '#111': 'rgba(255, 255, 255, 0.7)'
+          }
+        }
+      }}>
+        <InputLabel sx={{ 
+          '&.MuiInputLabel-shrink': {
+            background: isMobile ? '#ccc': theme.palette.primary.main,
+            paddingX: '4px'
+          }
+        }}>Select Agent</InputLabel>
+        <Select
+          value={selectedAgent}
+          onChange={(e) => setSelectedAgent(e.target.value)}
+          label="Select Agent"
+          MenuProps={{
+            PaperProps: {
+              sx: {
+                maxHeight: 300
+              }
+            }
+          }}
+        >
+          {availableAgents.map(agent => (
+            <MenuItem key={agent.id} value={agent.id}>
+              {agent.name}
+            </MenuItem>
+          ))}
+        </Select>
+      </FormControl>
+      {getCurrentAgent() && (
+        <Tooltip title={getCurrentAgent().description}>
+          <IconButton color="inherit">
+            <InfoIcon />
+          </IconButton>
+        </Tooltip>
+      )}
+      <Tooltip title="Change API Key">
+        <IconButton color="inherit" onClick={handleChangeApiKey}>
+          <KeyIcon />
+        </IconButton>
+      </Tooltip>
+    </Box>
+  );
+
   if (!appOpen) return '';
 
   return (
@@ -326,67 +397,7 @@ function App() {
               QHPH Chat
             </Typography>
           </Box>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-            <FormControl variant="outlined" size="small" sx={{ 
-              minWidth: 200, 
-              '& .MuiOutlinedInput-root': {
-                bgcolor: 'white',
-                borderRadius: 1,
-                '& fieldset': {
-                  borderColor: 'rgba(255, 255, 255, 0.5)',
-                }
-              },
-              '& .MuiInputLabel-root': {
-                color: 'white',
-                '&.Mui-focused': {
-                  color: 'white'
-                }
-              },
-              '& .MuiInputLabel-shrink': {
-                transform: 'translate(14px, -6px) scale(0.75)',
-                '&:not(.Mui-focused)': {
-                  color: 'rgba(255, 255, 255, 0.7)'
-                }
-              }
-            }}>
-              <InputLabel sx={{ 
-                '&.MuiInputLabel-shrink': {
-                  background: theme.palette.primary.main,
-                  paddingX: '4px'
-                }
-              }}>Select Agent</InputLabel>
-              <Select
-                value={selectedAgent}
-                onChange={(e) => setSelectedAgent(e.target.value)}
-                label="Select Agent"
-                MenuProps={{
-                  PaperProps: {
-                    sx: {
-                      maxHeight: 300
-                    }
-                  }
-                }}
-              >
-                {availableAgents.map(agent => (
-                  <MenuItem key={agent.id} value={agent.id}>
-                    {agent.name}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-            {getCurrentAgent() && (
-              <Tooltip title={getCurrentAgent().description}>
-                <IconButton color="inherit">
-                  <InfoIcon />
-                </IconButton>
-              </Tooltip>
-            )}
-            <Tooltip title="Change API Key">
-              <IconButton color="inherit" onClick={handleChangeApiKey}>
-                <KeyIcon />
-              </IconButton>
-            </Tooltip>
-          </Box>
+          {!isMobile && controls}
         </Toolbar>
       </AppBar>
       <Toolbar /> {/* Add spacing for the fixed AppBar */}
@@ -473,6 +484,7 @@ function App() {
               ))}
             </List>
           </Box>
+          {isMobile && controls}
         </Drawer>
 
         <Container maxWidth="md" sx={{ 
@@ -482,6 +494,10 @@ function App() {
           py: 3,
           gap: 2,
           height: 'calc(100vh - 60px)',
+          ...(isMobile && {
+            padding: '12px',  // Reduce padding on mobile
+            maxWidth: '100% !important', // Override Material-UI's maxWidth
+          })
         }}>
           <Paper sx={{
             flexGrow: 1,
@@ -489,7 +505,7 @@ function App() {
             flexDirection: 'column',
             overflow: 'hidden',
             boxShadow: 3,
-            borderRadius: 2,
+            borderRadius: isMobile ? 1 : 2, // Slightly reduce border radius on mobile
             bgcolor: 'white',
             height: '100%',
             overflowY: 'auto'

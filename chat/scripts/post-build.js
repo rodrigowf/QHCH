@@ -43,27 +43,3 @@ fs.readdir(path.join(buildDir, 'static/css'), (err, files) => {
         );
     }
 });
-
-// Create a chat div for the root index.html
-const chatHtml = `
-<div id="chat-root" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: white; z-index: 1000;">
-    <div id="root"></div>
-</div>
-`;
-
-// Update the root index.html
-let indexHtml = fs.readFileSync(path.join(rootDir, 'index.html'), 'utf8');
-
-// Add chat assets before </body>
-const chatAssets = `
-    <!-- Chat Application -->
-    <link href="assets/chat.css" rel="stylesheet">
-    <script src="assets/chat.js"></script>
-    ${chatHtml}
-`;
-
-indexHtml = indexHtml.replace('</body>', `${chatAssets}\n</body>`);
-
-// Write the updated index.html
-fs.writeFileSync(path.join(rootDir, 'index.html'), indexHtml);
-console.log('Updated index.html with chat application assets');
