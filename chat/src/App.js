@@ -65,6 +65,13 @@ function App() {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
+  const [appOpen, setAppOpen] = useState(true)
+  
+  const onToggleChatApp = (isOpen, setKey = false) => {
+    setAppOpen(isOpen);
+    setKey && setApiKeyDialogOpen(isOpen)
+  }
+
   // Load API key and conversations from local storage on component mount
   useEffect(() => {
     const storedApiKey = localStorage.getItem(API_KEY_STORAGE_KEY);
@@ -73,7 +80,7 @@ function App() {
     } else {
       // Show API key dialog if no API key is found
       if (window.onChatToggle) {
-        window.onChatToggle = (isOpen) => setApiKeyDialogOpen(isOpen);   
+        window.onChatToggle = (isOpen) => onToggleChatApp(isOpen, true);   
       } else {
         setApiKeyDialogOpen(true);
       }
@@ -93,8 +100,8 @@ function App() {
   }, []);
 
   useEffect(() => {
-    if (apiKey) {
-      window.onChatToggle = () => {};
+    if (apiKey && window.onChatToggle) {
+      window.onChatToggle = (isOpen) => onToggleChatApp(isOpen);
     }
   }, [apiKey])
 
@@ -284,6 +291,8 @@ function App() {
   const formatTimestamp = (timestamp) => {
     return new Date(timestamp).toLocaleString();
   };
+
+  if (!appOpen) return '';
 
   return (
     <Box sx={{
