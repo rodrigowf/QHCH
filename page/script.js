@@ -365,17 +365,6 @@ document.addEventListener('DOMContentLoaded', () => {
         chatRoot.style.backgroundColor = isDarkMode ? '#161616' : 'white';
     }
     
-    // Listen for changes in localStorage from the chat app
-    window.addEventListener('storage', (event) => {
-        if (event.key === DARK_MODE_STORAGE_KEY) {
-            const isDarkMode = JSON.parse(event.newValue);
-            if (isDarkMode !== document.body.classList.contains('dark-mode')) {
-                document.body.classList.toggle('dark-mode');
-                syncDarkMode();
-            }
-        }
-    });
-    
     // Load markdown immediately
     loadMarkdown();
 });
