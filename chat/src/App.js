@@ -54,7 +54,7 @@ function App() {
   const [conversations, setConversations] = useState([]);
   const [selectedConversation, setSelectedConversation] = useState(null);
   const [apiKey, setApiKey] = useState('');
-  const [drawerOpen, setDrawerOpen] = useState(true);
+  const [drawerOpen, setDrawerOpen] = useState(!window.isEmbedded);
   const [apiKeyDialogOpen, setApiKeyDialogOpen] = useState(false);
   const [tempApiKey, setTempApiKey] = useState('');
   const [snackbarOpen, setSnackbarOpen] = useState(false);
@@ -65,7 +65,7 @@ function App() {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
-  const [appOpen, setAppOpen] = useState(true)
+  const [appOpen, setAppOpen] = useState(Boolean(window.isEmbedded))
   
   const onToggleChatApp = (isOpen, setKey = false) => {
     setAppOpen(isOpen);
@@ -73,8 +73,10 @@ function App() {
   }
 
   useEffect(() => {
-    if (isMobile || !appOpen) {
+    if (isMobile) {
       setDrawerOpen(false);
+    } else if (appOpen) {
+      setDrawerOpen(true);
     }
   }, [isMobile, appOpen]);
 

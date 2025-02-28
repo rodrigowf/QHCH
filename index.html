@@ -19,6 +19,7 @@
 
     <script>
         // Function to toggle chat visibility
+        window.isEmbedded = true;
         window.onChatToggle = () => {};
 
         function toggleChat() {
@@ -48,22 +49,6 @@
                 window.onChatToggle(true);
             }
         }
-
-        // Initialize chat toggle button after DOM loads
-        document.addEventListener('DOMContentLoaded', () => {
-            const toggleButton = document.createElement('button');
-            toggleButton.id = 'chat-toggle';
-            toggleButton.textContent = 'Open Chat';
-            toggleButton.onclick = toggleChat;
-            document.body.appendChild(toggleButton);
-
-            // Style chat root for transitions
-            const chatRoot = document.getElementById('chat-root');
-            if (chatRoot) {
-                chatRoot.style.transition = 'opacity 300ms, transform 300ms';
-                chatRoot.style.opacity = '0';
-            }
-        });
     </script>
 </head>
 <body>

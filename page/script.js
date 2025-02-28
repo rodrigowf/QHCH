@@ -1,5 +1,9 @@
 const QHPH_PATH = "https://raw.githubusercontent.com/rodrigowf/QHPH/refs/heads/main/QHPH.md";
 
+// Necessary variables for the Chat app to integrate properly:
+window.isEmbedded = true;
+window.onChatToggle = () => {};
+
 // Configure marked options
 marked.use({
     mangle: false,
@@ -95,8 +99,10 @@ const katexOptions = {
     },
     displayMode: true,
     minRuleThickness: 0.05,
-    maxSize: 50,
-    maxExpand: 1000
+    maxSize: 10,
+    maxExpand: 100,
+    maxWidth: '100vw',
+    wrap: true
 };
 
 console.log('KaTeX options configured');
@@ -191,6 +197,27 @@ async function processMarkdown(content) {
         contentElement.innerHTML = htmlContent;
         console.log('HTML content updated in DOM');
         
+        // Add width constraints to all block elements
+        const blockElements = contentElement.querySelectorAll('p, h1, h2, h3, h4, h5, h6, ul, ol, blockquote, pre');
+        blockElements.forEach(element => {
+            element.style.maxWidth = '100%';
+            element.style.overflowWrap = 'break-word';
+        });
+
+        // Handle math elements specifically
+        const mathElements = document.querySelectorAll('.katex-display, .katex, .katex-html');
+        mathElements.forEach(element => {
+            element.style.maxWidth = '100vw';
+            element.style.overflowX = 'auto';
+            element.style.overflowY = 'hidden';
+            
+            // Force all child elements to stay within bounds
+            const children = element.getElementsByTagName('*');
+            for (let child of children) {
+                child.style.maxWidth = '100vw';
+            }
+        });
+        
         // Render LaTeX
         console.log('Starting LaTeX rendering');
         await renderMathInElement(contentElement, {
@@ -221,11 +248,67 @@ async function processMarkdown(content) {
     }
 }
 
-// Function to load and process the markdown file
+// Function to toggle chat visibility
+function toggleChat() {
+    const chatRoot = document.getElementById('chat-root');
+    const toggleButton = document.getElementById('chat-toggle');
+    const isVisible = chatRoot.style.display === 'block';
+
+    if (isVisible) {
+        chatRoot.style.opacity = '0';
+        chatRoot.style.transform = 'translateY(20px)';
+        setTimeout(() => {
+            chatRoot.style.display = 'none';
+        }, 300);
+        document.body.classList.remove('chat-open');
+        toggleButton.classList.remove('active');
+        toggleButton.textContent = 'Open Chat';
+        window.onChatToggle(false);
+    } else {
+        chatRoot.style.display = 'block';
+        // Force reflow
+        chatRoot.offsetHeight;
+        chatRoot.style.opacity = '1';
+        chatRoot.style.transform = 'translateY(0)';
+        document.body.classList.add('chat-open');
+        toggleButton.classList.add('active');
+        toggleButton.textContent = 'Close Chat';
+        window.onChatToggle(true);
+    }
+}
+
+// Update the DOMContentLoaded event handler
+document.addEventListener('DOMContentLoaded', () => {
+    console.log('DOM loaded, starting application');
+    
+    // Remove any existing toggle button to prevent duplicates
+    const existingButton = document.getElementById('chat-toggle');
+    if (existingButton) {
+        existingButton.remove();
+    }
+    
+    // Add the toggle button
+    const toggleButton = document.createElement('button');
+    toggleButton.id = 'chat-toggle';
+    toggleButton.textContent = 'Open Chat';
+    toggleButton.onclick = toggleChat;
+    document.body.appendChild(toggleButton);
+
+    // Style chat root for transitions
+    const chatRoot = document.getElementById('chat-root');
+    if (chatRoot) {
+        chatRoot.style.transition = 'opacity 300ms, transform 300ms';
+        chatRoot.style.opacity = '0';
+    }
+    
+    // Load markdown immediately
+    loadMarkdown();
+});
+
+// Clean up loadMarkdown function
 async function loadMarkdown() {
     console.log('Starting markdown loading process');
     try {
-        console.log('Fetching QHPH.md');
         const timestamp = new Date().getTime();
         const response = await fetch(`${QHPH_PATH}?t=${timestamp}`);
         
@@ -233,15 +316,20 @@ async function loadMarkdown() {
             throw new Error(`Failed to load markdown file: ${response.status} ${response.statusText}`);
         }
         
-        console.log('Markdown file fetched successfully');
         const content = await response.text();
-        console.log('Markdown content loaded, length:', content.length);
         
         // Generate table of contents
         generateTOC(content);
         
         // Process markdown and LaTeX
         await processMarkdown(content);
+        
+        // Apply mobile styles AFTER content is loaded and rendered
+        if (window.innerWidth <= 900) {
+            setTimeout(() => {
+                applyMobileStyles();
+            }, 100);
+        }
         
     } catch (error) {
         console.error('Error in loadMarkdown:', error);
@@ -255,6 +343,41 @@ async function loadMarkdown() {
     }
 }
 
+// New function to apply mobile styles after content is loaded
+function applyMobileStyles() {
+    // Apply mobile-specific styles programmatically
+    const style = document.createElement('style');
+    style.textContent = `
+        .container {
+            grid-template-columns: 100% !important;
+            width: 100% !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            gap: 0 !important;
+            display: block !important;
+        }
+        
+        main {
+            width: 100% !important;
+            max-width: 100% !important;
+            margin: 0 !important;
+            padding: 1rem !important;
+            box-sizing: border-box !important;
+            overflow-x: hidden !important;
+        }
+        
+        .katex-display, .katex, .katex-html {
+            max-width: 100vw !important;
+            overflow-x: auto !important;
+            overflow-y: hidden !important;
+        }
+    `;
+    document.head.appendChild(style);
+    
+    // Force reflow
+    document.body.offsetHeight;
+}
+
 // Add smooth scrolling for TOC links
 document.addEventListener('click', (e) => {
     if (e.target.tagName === 'A' && e.target.hash) {
@@ -265,10 +388,4 @@ document.addEventListener('click', (e) => {
             history.pushState(null, '', e.target.hash);
         }
     }
-});
-
-// Initialize
-document.addEventListener('DOMContentLoaded', () => {
-    console.log('DOM loaded, starting application');
-    loadMarkdown();
 }); 
