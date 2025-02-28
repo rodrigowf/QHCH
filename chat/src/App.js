@@ -66,8 +66,9 @@ function App() {
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
   const [snackbarSeverity, setSnackbarSeverity] = useState('success');
+  const savedDarkModeState = localStorage.getItem(DARK_MODE_STORAGE_KEY);
   const [darkMode, setDarkMode] = useState(() => {
-    const savedMode = localStorage.getItem(DARK_MODE_STORAGE_KEY);
+    const savedMode = savedDarkModeState;
     return savedMode !== null ? JSON.parse(savedMode) : true; // Default to dark mode
   });
   
