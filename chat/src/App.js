@@ -471,7 +471,8 @@ function App() {
           display: 'flex',
           flexDirection: 'column',
           py: 3,
-          gap: 2
+          gap: 2,
+          height: 'calc(100vh - 60px)',
         }}>
           <Paper sx={{
             flexGrow: 1,
@@ -480,7 +481,9 @@ function App() {
             overflow: 'hidden',
             boxShadow: 3,
             borderRadius: 2,
-            bgcolor: 'white'
+            bgcolor: 'white',
+            height: '100%',
+            overflowY: 'auto'
           }}>
             <List sx={{
               flexGrow: 1,
