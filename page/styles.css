@@ -51,6 +51,12 @@ header {
     box-shadow: var(--shadow-lg);
     position: relative;
     z-index: 10;
+    transition: padding var(--transition-speed) ease-in-out;
+}
+
+body.chat-open header {
+    padding: 0;
+    transition: padding var(--transition-speed) ease-in-out;
 }
 
 .header-content h1 {
@@ -87,7 +93,60 @@ header {
     text-decoration: underline;
 }
 
-/* Table of Contents Styling */
+#chat-toggle {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    padding: 15px 30px;
+    background-color: #2196f3;
+    color: white;
+    border: none;
+    border-radius: 25px;
+    cursor: pointer;
+    font-size: 16px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+    z-index: 1001;
+}
+
+#chat-toggle:hover {
+    background-color: #1976d2;
+    box-shadow: 0 6px 8px rgba(0,0,0,0.2);
+    transform: translateY(-2px);
+}
+
+#chat-toggle.active {
+    background-color: #f44336;
+}
+
+#chat-toggle.active:hover {
+    background-color: #d32f2f;
+}
+
+.fade-enter {
+    opacity: 0;
+    transform: translateY(20px);
+}
+
+.fade-enter-active {
+    opacity: 1;
+    transform: translateY(0);
+    transition: opacity 300ms, transform 300ms;
+}
+
+.fade-exit {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.fade-exit-active {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 300ms, transform 300ms;
+}
+
+/* Table of Contents Styling :................ */
+
 nav#toc {
     grid-area: nav;
     background: white;

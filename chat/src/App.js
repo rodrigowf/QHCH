@@ -72,7 +72,11 @@ function App() {
       setApiKey(storedApiKey);
     } else {
       // Show API key dialog if no API key is found
-      setApiKeyDialogOpen(true);
+      if (window.onChatToggle) {
+        window.onChatToggle = () => !apiKey && setApiKeyDialogOpen(true);   
+      } else {
+        setApiKeyDialogOpen(true);
+      }
     }
 
     // Load conversations from local storage
@@ -304,7 +308,7 @@ function App() {
               letterSpacing: '0.5px',
               textShadow: '1px 1px 2px rgba(0,0,0,0.1)'
             }}>
-              QQSH Chat
+              QHPH Chat
             </Typography>
           </Box>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
@@ -588,7 +592,7 @@ function App() {
         open={snackbarOpen} 
         autoHideDuration={6000} 
         onClose={handleCloseSnackbar}
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
       >
         <Alert onClose={handleCloseSnackbar} severity={snackbarSeverity} sx={{ width: '100%' }}>
           {snackbarMessage}

@@ -16,17 +16,65 @@
     
     <!-- Custom Script -->
     <script defer src="page/script.js?v=1"></script>
+
+    <script>
+        // Function to toggle chat visibility
+        window.onChatToggle = () => {};
+
+        function toggleChat() {
+            const chatRoot = document.getElementById('chat-root');
+            const toggleButton = document.getElementById('chat-toggle');
+            const isVisible = chatRoot.style.display === 'block';
+
+            if (isVisible) {
+                chatRoot.style.opacity = '0';
+                chatRoot.style.transform = 'translateY(20px)';
+                setTimeout(() => {
+                    chatRoot.style.display = 'none';
+                }, 300);
+                document.body.classList.remove('chat-open');
+                toggleButton.classList.remove('active');
+                toggleButton.textContent = 'Open Chat';
+                window.onChatToggle(false);
+            } else {
+                chatRoot.style.display = 'block';
+                // Force reflow
+                chatRoot.offsetHeight;
+                chatRoot.style.opacity = '1';
+                chatRoot.style.transform = 'translateY(0)';
+                document.body.classList.add('chat-open');
+                toggleButton.classList.add('active');
+                toggleButton.textContent = 'Close Chat';
+                window.onChatToggle(true);
+            }
+        }
+
+        // Initialize chat toggle button after DOM loads
+        document.addEventListener('DOMContentLoaded', () => {
+            const toggleButton = document.createElement('button');
+            toggleButton.id = 'chat-toggle';
+            toggleButton.textContent = 'Open Chat';
+            toggleButton.onclick = toggleChat;
+            document.body.appendChild(toggleButton);
+
+            // Style chat root for transitions
+            const chatRoot = document.getElementById('chat-root');
+            if (chatRoot) {
+                chatRoot.style.transition = 'opacity 300ms, transform 300ms';
+                chatRoot.style.opacity = '0';
+            }
+        });
+    </script>
 </head>
 <body>
     <div class="container">
-        <header>
+        <header id="main-header" class="">
             <div class="header-content">
                 <h1>Quantum Holographic Perception Hypothesis</h1>
                 <p class="subtitle">A Unified Framework for Consciousness and Reality</p>
                 <p class="links">
                     <a href="https://github.com/rodrigowf/QHPH" target="_blank">GitHub Repository</a> | 
-                    <a href="https://github.com/rodrigowf/QHPH/blob/main/QHPH.md" target="_blank">View Raw Markdown</a> | 
-                    <a href="chat/build/index.html">Chat with QHPH AI</a>
+                    <a href="https://github.com/rodrigowf/QHPH/blob/main/QHPH.md" target="_blank">View Raw Markdown</a>
                 </p>
             </div>
         </header>
@@ -44,5 +92,54 @@
             <p>© 2024 Rodrigo Werneck Franco. All rights reserved.</p>
         </footer>
     </div>
+
+    <!-- Chat Application (single instance) -->
+    <link href="assets/chat.css" rel="stylesheet">
+    
+    <div id="chat-root" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: white; z-index: 1000;">
+        <div id="root"></div>
+    </div>
+
+    <script src="assets/chat.js"></script>
+
+    <!-- Chat Application -->
+    <link href="assets/chat.css" rel="stylesheet">
+    <script src="assets/chat.js"></script>
+    
+<div id="chat-root" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: white; z-index: 1000;">
+    <div id="root"></div>
+</div>
+
+
+
+    <!-- Chat Application -->
+    <link href="assets/chat.css" rel="stylesheet">
+    <script src="assets/chat.js"></script>
+    
+<div id="chat-root" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: white; z-index: 1000;">
+    <div id="root"></div>
+</div>
+
+
+
+    <!-- Chat Application -->
+    <link href="assets/chat.css" rel="stylesheet">
+    <script src="assets/chat.js"></script>
+    
+<div id="chat-root" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: white; z-index: 1000;">
+    <div id="root"></div>
+</div>
+
+
+
+    <!-- Chat Application -->
+    <link href="assets/chat.css" rel="stylesheet">
+    <script src="assets/chat.js"></script>
+    
+<div id="chat-root" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: white; z-index: 1000;">
+    <div id="root"></div>
+</div>
+
+
 </body>
 </html> 
