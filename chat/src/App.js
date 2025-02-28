@@ -30,7 +30,10 @@ import {
   DialogContentText,
   DialogActions,
   Snackbar,
-  Alert
+  Alert,
+  ThemeProvider,
+  createTheme,
+  CssBaseline
 } from '@mui/material';
 import SendIcon from '@mui/icons-material/Send';
 import InfoIcon from '@mui/icons-material/Info';
@@ -38,11 +41,14 @@ import MenuIcon from '@mui/icons-material/Menu';
 import AddIcon from '@mui/icons-material/Add';
 import DownloadIcon from '@mui/icons-material/Download';
 import KeyIcon from '@mui/icons-material/Key';
+import Brightness4Icon from '@mui/icons-material/Brightness4';
+import Brightness7Icon from '@mui/icons-material/Brightness7';
 import { agentPrompts, availableAgents } from './prompts';
 
 // Local storage keys
 const API_KEY_STORAGE_KEY = 'openai_api_key';
 const CONVERSATIONS_STORAGE_KEY = 'qhph_conversations';
+const DARK_MODE_STORAGE_KEY = 'qhph_dark_mode';
 
 const drawerWidth = 300;
 
@@ -60,12 +66,34 @@ function App() {
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
   const [snackbarSeverity, setSnackbarSeverity] = useState('success');
+  const [darkMode, setDarkMode] = useState(() => {
+    const savedMode = localStorage.getItem(DARK_MODE_STORAGE_KEY);
+    return savedMode ? JSON.parse(savedMode) : false;
+  });
   
-  const messagesEndRef = useRef(null);
-  const theme = useTheme();
+  const theme = createTheme({
+    palette: {
+      mode: darkMode ? 'dark' : 'light',
+      primary: {
+        main: '#2196f3',
+      },
+      background: {
+        default: darkMode ? '#121212' : '#f5f5f5',
+        paper: darkMode ? '#1e1e1e' : '#ffffff',
+      },
+    },
+  });
+  
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  const messagesEndRef = useRef(null);
 
-  const [appOpen, setAppOpen] = useState(Boolean(window.isEmbedded))
+  const toggleDarkMode = () => {
+    const newMode = !darkMode;
+    setDarkMode(newMode);
+    localStorage.setItem(DARK_MODE_STORAGE_KEY, JSON.stringify(newMode));
+  };
+
+  const [appOpen, setAppOpen] = useState(!window.isEmbedded)
   
   const onToggleChatApp = (isOpen, setKey = false) => {
     setAppOpen(isOpen);
@@ -306,28 +334,28 @@ function App() {
         marginBottom: isMobile ? 2 : 0,
         minWidth: 190, 
         '& .MuiOutlinedInput-root': {
-          bgcolor: 'white',
+          bgcolor: theme.palette.background.paper,
           borderRadius: 1,
           '& fieldset': {
-            borderColor: isMobile ? '#ccc': 'rgba(255, 255, 255, 0.5)',
+            borderColor: isMobile ? theme.palette.divider : 'rgba(255, 255, 255, 0.5)',
           }
         },
         '& .MuiInputLabel-root': {
-          color: 'white',
+          color: theme.palette.mode === 'dark' ? theme.palette.text.primary : 'white',
           '&.Mui-focused': {
-            color: 'white'
+            color: theme.palette.mode === 'dark' ? theme.palette.text.primary : 'white'
           }
         },
         '& .MuiInputLabel-shrink': {
           transform: 'translate(14px, -6px) scale(0.75)',
           '&:not(.Mui-focused)': {
-            color: isMobile ? '#111': 'rgba(255, 255, 255, 0.7)'
+            color: isMobile ? theme.palette.text.primary : 'rgba(255, 255, 255, 0.7)'
           }
         }
       }}>
         <InputLabel sx={{ 
           '&.MuiInputLabel-shrink': {
-            background: isMobile ? '#ccc': theme.palette.primary.main,
+            background: isMobile ? theme.palette.background.paper : theme.palette.primary.main,
             paddingX: '4px'
           }
         }}>Select Agent</InputLabel>
@@ -362,279 +390,293 @@ function App() {
           <KeyIcon />
         </IconButton>
       </Tooltip>
+      <Tooltip title={darkMode ? "Switch to Light Mode" : "Switch to Dark Mode"}>
+        <IconButton color="inherit" onClick={toggleDarkMode}>
+          {darkMode ? <Brightness7Icon /> : <Brightness4Icon />}
+        </IconButton>
+      </Tooltip>
     </Box>
   );
 
   if (!appOpen) return '';
 
   return (
-    <Box sx={{
-      height: '100vh',
-      display: 'flex',
-      flexDirection: 'column',
-      bgcolor: theme.palette.grey[100]
-    }}>
-      <AppBar 
-        position="fixed" 
-        sx={{ 
-          bgcolor: theme.palette.primary.main,
-          boxShadow: 3,
-          zIndex: (theme) => theme.zIndex.drawer + 1
-        }}
-      >
-        <Toolbar sx={{ display: 'flex', justifyContent: 'space-between' }}>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-            <IconButton
-              color="inherit"
-              onClick={() => setDrawerOpen(!drawerOpen)}
-              sx={{ display: { sm: 'none' } }}
-            >
-              <MenuIcon />
-            </IconButton>
-            <Typography variant="h5" sx={{ 
-              fontWeight: 500,
-              letterSpacing: '0.5px',
-              textShadow: '1px 1px 2px rgba(0,0,0,0.1)'
-            }}>
-              QHPH Chat
-            </Typography>
-          </Box>
-          {!isMobile && controls}
-        </Toolbar>
-      </AppBar>
-      <Toolbar /> {/* Add spacing for the fixed AppBar */}
-
-      <Box sx={{ display: 'flex', flexGrow: 1 }}>
-        <Drawer
-          variant={isMobile ? 'temporary' : 'persistent'}
-          open={drawerOpen}
-          onClose={() => setDrawerOpen(false)}
-          sx={{
-            width: drawerWidth,
-            flexShrink: 0,
-            '& .MuiDrawer-paper': {
-              width: drawerWidth,
-              boxSizing: 'border-box',
-              bgcolor: 'white',
-              top: { xs: 0, sm: 64 }, // 64px is the default AppBar height
-              height: { xs: '100%', sm: 'calc(100% - 64px)' }, // Subtract AppBar height on desktop
-              '& > .MuiToolbar-root': { // Hide the toolbar spacer on desktop
-                display: { sm: 'none' }
-              }
-            },
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
+      <Box sx={{
+        height: '100vh',
+        display: 'flex',
+        flexDirection: 'column',
+        bgcolor: theme.palette.grey[100]
+      }}>
+        <AppBar 
+          position="fixed" 
+          sx={{ 
+            bgcolor: theme.palette.primary.main,
+            boxShadow: 3,
+            zIndex: (theme) => theme.zIndex.drawer + 1
           }}
         >
-          {isMobile && <Toolbar />} {/* Only show toolbar spacer on mobile */}
-          <Box sx={{ 
-            overflow: 'auto',
-            height: '100%', // Make sure the Box takes full height
-            display: 'flex',
-            flexDirection: 'column'
-          }}>
-            <Box sx={{ 
-              display: 'flex', 
-              justifyContent: 'space-between', 
-              alignItems: 'center',
-              px: 2,
-              py: 1
-            }}>
-              <ListItemButton onClick={startNewConversation}>
-                <AddIcon sx={{ mr: 1 }} />
-                <ListItemText primary="New Conversation" />
-              </ListItemButton>
-              <Tooltip title="Backup Conversations">
-                <IconButton onClick={handleBackupConversations}>
-                  <DownloadIcon />
-                </IconButton>
-              </Tooltip>
+          <Toolbar sx={{ display: 'flex', justifyContent: 'space-between' }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+              <IconButton
+                color="inherit"
+                onClick={() => setDrawerOpen(!drawerOpen)}
+                sx={{ display: { sm: 'none' } }}
+              >
+                <MenuIcon />
+              </IconButton>
+              <Typography variant="h5" sx={{ 
+                fontWeight: 500,
+                letterSpacing: '0.5px',
+                textShadow: '1px 1px 2px rgba(0,0,0,0.1)'
+              }}>
+                QHPH Chat
+              </Typography>
             </Box>
-            <Divider />
-            <List sx={{ flexGrow: 1, overflow: 'auto' }}>
-              {conversations.map((conv) => (
-                <ListItem key={conv.id} disablePadding>
-                  <ListItemButton 
-                    selected={selectedConversation === conv.id}
-                    onClick={() => loadConversation(conv.id)}
-                    sx={{ 
-                      display: 'block',
-                      py: 1,
-                      px: 2,
-                      '&.Mui-selected': {
-                        bgcolor: theme.palette.primary.light,
-                        color: theme.palette.primary.contrastText,
-                      }
-                    }}
-                  >
-                    <Typography variant="subtitle2" sx={{ fontWeight: 'bold' }}>
-                      {conv.agent}
-                    </Typography>
-                    <Typography variant="body2" sx={{ 
-                      color: 'text.secondary',
-                      overflow: 'hidden',
-                      textOverflow: 'ellipsis',
-                      display: '-webkit-box',
-                      WebkitLineClamp: 2,
-                      WebkitBoxOrient: 'vertical',
-                    }}>
-                      {conv.preview}
-                    </Typography>
-                    <Typography variant="caption" sx={{ color: 'text.secondary' }}>
-                      {formatTimestamp(conv.timestamp)}
-                    </Typography>
-                  </ListItemButton>
-                </ListItem>
-              ))}
-            </List>
-          </Box>
-          {isMobile && controls}
-        </Drawer>
+            {!isMobile && controls}
+          </Toolbar>
+        </AppBar>
+        <Toolbar /> {/* Add spacing for the fixed AppBar */}
 
-        <Container maxWidth="md" sx={{ 
-          flexGrow: 1,
-          display: 'flex',
-          flexDirection: 'column',
-          py: 3,
-          gap: 2,
-          height: 'calc(100vh - 60px)',
-          ...(isMobile && {
-            padding: '12px',  // Reduce padding on mobile
-            maxWidth: '100% !important', // Override Material-UI's maxWidth
-          })
-        }}>
-          <Paper sx={{
+        <Box sx={{ display: 'flex', flexGrow: 1 }}>
+          <Drawer
+            variant={isMobile ? 'temporary' : 'persistent'}
+            open={drawerOpen}
+            onClose={() => setDrawerOpen(false)}
+            sx={{
+              width: drawerWidth,
+              flexShrink: 0,
+              '& .MuiDrawer-paper': {
+                width: drawerWidth,
+                boxSizing: 'border-box',
+                bgcolor: 'white',
+                top: { xs: 0, sm: 64 }, // 64px is the default AppBar height
+                height: { xs: '100%', sm: 'calc(100% - 64px)' }, // Subtract AppBar height on desktop
+                '& > .MuiToolbar-root': { // Hide the toolbar spacer on desktop
+                  display: { sm: 'none' }
+                }
+              },
+            }}
+          >
+            {isMobile && <Toolbar />} {/* Only show toolbar spacer on mobile */}
+            <Box sx={{ 
+              overflow: 'auto',
+              height: '100%', // Make sure the Box takes full height
+              display: 'flex',
+              flexDirection: 'column'
+            }}>
+              <Box sx={{ 
+                display: 'flex', 
+                justifyContent: 'space-between', 
+                alignItems: 'center',
+                px: 2,
+                py: 1
+              }}>
+                <ListItemButton onClick={startNewConversation}>
+                  <AddIcon sx={{ mr: 1 }} />
+                  <ListItemText primary="New Conversation" />
+                </ListItemButton>
+                <Tooltip title="Backup Conversations">
+                  <IconButton onClick={handleBackupConversations}>
+                    <DownloadIcon />
+                  </IconButton>
+                </Tooltip>
+              </Box>
+              <Divider />
+              <List sx={{ flexGrow: 1, overflow: 'auto' }}>
+                {conversations.map((conv) => (
+                  <ListItem key={conv.id} disablePadding>
+                    <ListItemButton 
+                      selected={selectedConversation === conv.id}
+                      onClick={() => loadConversation(conv.id)}
+                      sx={{ 
+                        display: 'block',
+                        py: 1,
+                        px: 2,
+                        '&.Mui-selected': {
+                          bgcolor: theme.palette.primary.light,
+                          color: theme.palette.primary.contrastText,
+                        }
+                      }}
+                    >
+                      <Typography variant="subtitle2" sx={{ fontWeight: 'bold' }}>
+                        {conv.agent}
+                      </Typography>
+                      <Typography variant="body2" sx={{ 
+                        color: 'text.secondary',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        display: '-webkit-box',
+                        WebkitLineClamp: 2,
+                        WebkitBoxOrient: 'vertical',
+                      }}>
+                        {conv.preview}
+                      </Typography>
+                      <Typography variant="caption" sx={{ color: 'text.secondary' }}>
+                        {formatTimestamp(conv.timestamp)}
+                      </Typography>
+                    </ListItemButton>
+                  </ListItem>
+                ))}
+              </List>
+            </Box>
+            {isMobile && controls}
+          </Drawer>
+
+          <Container maxWidth="md" sx={{ 
             flexGrow: 1,
             display: 'flex',
             flexDirection: 'column',
-            overflow: 'hidden',
-            boxShadow: 3,
-            borderRadius: isMobile ? 1 : 2, // Slightly reduce border radius on mobile
-            bgcolor: 'white',
-            height: '100%',
-            overflowY: 'auto'
+            py: 3,
+            gap: 2,
+            height: 'calc(100vh - 60px)',
+            ...(isMobile && {
+              padding: '12px',  // Reduce padding on mobile
+              maxWidth: '100% !important', // Override Material-UI's maxWidth
+            })
           }}>
-            <List sx={{
+            <Paper sx={{
               flexGrow: 1,
-              overflow: 'auto',
-              p: 2,
-              '& > *:not(:last-child)': { mb: 2 }
+              display: 'flex',
+              flexDirection: 'column',
+              overflow: 'hidden',
+              boxShadow: 3,
+              borderRadius: isMobile ? 1 : 2,
+              bgcolor: theme.palette.background.paper,
+              height: '100%',
+              overflowY: 'auto'
             }}>
-              {messages.map((msg, index) => (
-                <ListItem
-                  key={index}
-                  sx={{
-                    flexDirection: 'column',
-                    alignItems: msg.role === 'user' ? 'flex-end' : 'flex-start',
-                    padding: 0
-                  }}
-                >
-                  <Box sx={{
-                    maxWidth: '80%',
-                    bgcolor: msg.role === 'user' ? theme.palette.primary.main : theme.palette.grey[200],
-                    color: msg.role === 'user' ? 'white' : 'black',
-                    borderRadius: 2,
-                    px: 2,
-                    py: 1,
-                    boxShadow: 1
-                  }}>
-                    <Typography variant="body1" sx={{ whiteSpace: 'pre-wrap' }}>
-                      {msg.content}
-                    </Typography>
-                  </Box>
-                </ListItem>
-              ))}
-              <div ref={messagesEndRef} />
-            </List>
-
-            <Box sx={{
-              p: 2,
-              borderTop: 1,
-              borderColor: 'divider',
-              bgcolor: 'white'
-            }}>
-              <Box sx={{
-                display: 'flex',
-                gap: 1
+              <List sx={{
+                flexGrow: 1,
+                overflow: 'auto',
+                p: 2,
+                '& > *:not(:last-child)': { mb: 2 }
               }}>
-                <TextField
-                  fullWidth
-                  variant="outlined"
-                  placeholder={apiKey ? "Type your message..." : "Please set your OpenAI API key first"}
-                  value={input}
-                  onChange={(e) => setInput(e.target.value)}
-                  onKeyPress={(e) => {
-                    if (e.key === 'Enter' && !e.shiftKey) {
-                      e.preventDefault();
-                      handleSend();
-                    }
-                  }}
-                  disabled={!apiKey || loading}
-                  multiline
-                  maxRows={4}
-                  sx={{
-                    '& .MuiOutlinedInput-root': {
-                      borderRadius: 2
-                    }
-                  }}
-                />
-                <Button
-                  variant="contained"
-                  onClick={handleSend}
-                  disabled={!apiKey || loading}
-                  sx={{
-                    borderRadius: 2,
-                    minWidth: '50px',
-                    height: '56px',
-                    boxShadow: 2
-                  }}
-                >
-                  {loading ? <CircularProgress size={24} color="inherit" /> : <SendIcon />}
-                </Button>
+                {messages.map((msg, index) => (
+                  <ListItem
+                    key={index}
+                    sx={{
+                      flexDirection: 'column',
+                      alignItems: msg.role === 'user' ? 'flex-end' : 'flex-start',
+                      padding: 0
+                    }}
+                  >
+                    <Box sx={{
+                      maxWidth: '80%',
+                      bgcolor: msg.role === 'user' ? 
+                        theme.palette.primary.main : 
+                        theme.palette.mode === 'dark' ? 
+                          theme.palette.grey[800] : 
+                          theme.palette.grey[200],
+                      color: msg.role === 'user' || theme.palette.mode === 'dark' ? 
+                        theme.palette.primary.contrastText : 
+                        theme.palette.text.primary,
+                      borderRadius: 2,
+                      px: 2,
+                      py: 1,
+                      boxShadow: 1
+                    }}>
+                      <Typography variant="body1" sx={{ whiteSpace: 'pre-wrap' }}>
+                        {msg.content}
+                      </Typography>
+                    </Box>
+                  </ListItem>
+                ))}
+                <div ref={messagesEndRef} />
+              </List>
+
+              <Box sx={{
+                p: 2,
+                borderTop: 1,
+                borderColor: 'divider',
+                bgcolor: theme.palette.background.paper
+              }}>
+                <Box sx={{
+                  display: 'flex',
+                  gap: 1
+                }}>
+                  <TextField
+                    fullWidth
+                    variant="outlined"
+                    placeholder={apiKey ? "Type your message..." : "Please set your OpenAI API key first"}
+                    value={input}
+                    onChange={(e) => setInput(e.target.value)}
+                    onKeyPress={(e) => {
+                      if (e.key === 'Enter' && !e.shiftKey) {
+                        e.preventDefault();
+                        handleSend();
+                      }
+                    }}
+                    disabled={!apiKey || loading}
+                    multiline
+                    maxRows={4}
+                    sx={{
+                      '& .MuiOutlinedInput-root': {
+                        borderRadius: 2
+                      }
+                    }}
+                  />
+                  <Button
+                    variant="contained"
+                    onClick={handleSend}
+                    disabled={!apiKey || loading}
+                    sx={{
+                      borderRadius: 2,
+                      minWidth: '50px',
+                      height: '56px',
+                      boxShadow: 2
+                    }}
+                  >
+                    {loading ? <CircularProgress size={24} color="inherit" /> : <SendIcon />}
+                  </Button>
+                </Box>
               </Box>
-            </Box>
-          </Paper>
-        </Container>
+            </Paper>
+          </Container>
+        </Box>
+
+        {/* API Key Dialog */}
+        <Dialog open={apiKeyDialogOpen} onClose={() => setApiKeyDialogOpen(false)}>
+          <DialogTitle>OpenAI API Key</DialogTitle>
+          <DialogContent>
+            <DialogContentText>
+              Please enter your OpenAI API key to use this application. Your key will be stored locally in your browser and never sent to our servers.
+            </DialogContentText>
+            <TextField
+              autoFocus
+              margin="dense"
+              label="API Key"
+              type="password"
+              fullWidth
+              variant="outlined"
+              value={tempApiKey}
+              onChange={(e) => setTempApiKey(e.target.value)}
+            />
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={() => setApiKeyDialogOpen(false)} color="primary">
+              Cancel
+            </Button>
+            <Button onClick={handleSaveApiKey} color="primary" variant="contained">
+              Save
+            </Button>
+          </DialogActions>
+        </Dialog>
+
+        {/* Snackbar for notifications */}
+        <Snackbar 
+          open={snackbarOpen} 
+          autoHideDuration={6000} 
+          onClose={handleCloseSnackbar}
+          anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+        >
+          <Alert onClose={handleCloseSnackbar} severity={snackbarSeverity} sx={{ width: '100%' }}>
+            {snackbarMessage}
+          </Alert>
+        </Snackbar>
       </Box>
-
-      {/* API Key Dialog */}
-      <Dialog open={apiKeyDialogOpen} onClose={() => setApiKeyDialogOpen(false)}>
-        <DialogTitle>OpenAI API Key</DialogTitle>
-        <DialogContent>
-          <DialogContentText>
-            Please enter your OpenAI API key to use this application. Your key will be stored locally in your browser and never sent to our servers.
-          </DialogContentText>
-          <TextField
-            autoFocus
-            margin="dense"
-            label="API Key"
-            type="password"
-            fullWidth
-            variant="outlined"
-            value={tempApiKey}
-            onChange={(e) => setTempApiKey(e.target.value)}
-          />
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setApiKeyDialogOpen(false)} color="primary">
-            Cancel
-          </Button>
-          <Button onClick={handleSaveApiKey} color="primary" variant="contained">
-            Save
-          </Button>
-        </DialogActions>
-      </Dialog>
-
-      {/* Snackbar for notifications */}
-      <Snackbar 
-        open={snackbarOpen} 
-        autoHideDuration={6000} 
-        onClose={handleCloseSnackbar}
-        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
-      >
-        <Alert onClose={handleCloseSnackbar} severity={snackbarSeverity} sx={{ width: '100%' }}>
-          {snackbarMessage}
-        </Alert>
-      </Snackbar>
-    </Box>
+    </ThemeProvider>
   );
 }
 
