@@ -73,7 +73,7 @@ function App() {
     } else {
       // Show API key dialog if no API key is found
       if (window.onChatToggle) {
-        window.onChatToggle = () => !apiKey && setApiKeyDialogOpen(true);   
+        window.onChatToggle = (isOpen) => setApiKeyDialogOpen(isOpen);   
       } else {
         setApiKeyDialogOpen(true);
       }
@@ -91,6 +91,12 @@ function App() {
       }
     }
   }, []);
+
+  useEffect(() => {
+    if (apiKey) {
+      window.onChatToggle = () => {};
+    }
+  }, [apiKey])
 
   // Save conversations to local storage whenever they change
   useEffect(() => {
