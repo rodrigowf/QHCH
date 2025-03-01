@@ -18,14 +18,16 @@
     <script src="https://cdn.jsdelivr.net/npm/marked@11.1.1/marked.min.js"></script>
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     
-    <!-- Custom Script -->
-    <script defer src="page/script.js?v=3"></script>
-
     <script>
-        // Necessary variables for the Chat app to integrate properly
+        // Necessary variables for the Chat app to integrate properly:
         window.isEmbedded = true;
         window.onChatToggle = () => {};
+        window.isChatOpen = false;
+        window.isDarkMode = false;
     </script>
+
+    <!-- Custom Script -->
+    <script defer src="page/script.js?v=3"></script>
 </head>
 <body>
     <div class="container">

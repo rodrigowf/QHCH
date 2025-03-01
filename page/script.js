@@ -3,15 +3,11 @@ const QHPH_PATH = "https://raw.githubusercontent.com/rodrigowf/QHPH/refs/heads/m
 // Local storage keys
 const DARK_MODE_STORAGE_KEY = 'qhph_dark_mode';
 
-// Necessary variables for the Chat app to integrate properly:
-window.isEmbedded = true;
-window.onChatToggle = () => {};
-window.isDarkMode = false;
 
 // Function to load and set dark mode based on local storage
 function initializeDarkMode() {
   const savedMode = localStorage.getItem(DARK_MODE_STORAGE_KEY);
-  const isDarkMode = savedMode !== null ? JSON.parse(savedMode) : true; // Default to dark mode
+  const isDarkMode = savedMode !== undefined ? savedMode : window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches; // Default to dark mode
   
   if (isDarkMode) {
     document.body.classList.add('dark-mode');
@@ -32,6 +28,8 @@ function toggleChat() {
     const isVisible = chatRoot.style.display === 'block';
 
     if (isVisible) { // Deactivating Chat (going back to main)
+        window.isChatOpen = false;
+        window.onChatToggle(false);
         chatRoot.style.opacity = '0';
         chatRoot.style.transform = 'translateY(20px)';
         setTimeout(() => {
@@ -46,9 +44,10 @@ function toggleChat() {
         toggleButton.classList.remove('active');
         toggleButton.innerHTML = '<span class="material-icons">chat</span> Open Chat'; // Changed to use material icons
         darkModeToggle.style.display = 'block';
-        
-        window.onChatToggle(false);
     } else { // Activating Chat (load Chat built react app)
+        const darkMode = syncDarkMode();
+        window.isChatOpen = true;
+        window.onChatToggle(true, darkMode);
         chatRoot.style.display = 'block';
         // Force reflow
         chatRoot.offsetHeight;
@@ -58,13 +57,13 @@ function toggleChat() {
         toggleButton.classList.add('active');
         toggleButton.innerHTML = '<span class="material-icons">close</span> Close Chat'; // Changed to use material icons
         darkModeToggle.style.display = 'none';
-        window.onChatToggle(true);
     }
 }
 
 // Function to synchronize dark mode between page and chat
 function syncDarkMode() {
     const isDarkMode = document.body.classList.contains('dark-mode');
+    console.log("IS DARK MODE:", isDarkMode);
     localStorage.setItem(DARK_MODE_STORAGE_KEY, JSON.stringify(isDarkMode));
     
     // Update the chat root background dynamically

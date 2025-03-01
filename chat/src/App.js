@@ -53,6 +53,7 @@ const DARK_MODE_STORAGE_KEY = 'qhph_dark_mode';
 const drawerWidth = 300;
 
 function App() {
+  const [appOpen, setAppOpen] = useState(true);
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
@@ -153,10 +154,9 @@ function App() {
     localStorage.setItem(DARK_MODE_STORAGE_KEY, JSON.stringify(newMode));
   };
 
-  const [appOpen, setAppOpen] = useState(!window.isEmbedded)
-  
-  const onToggleChatApp = (isOpen, setKey = false) => {
+  const onToggleChatApp = (isOpen, darkMode, setKey = false) => {
     setAppOpen(isOpen);
+    setDarkMode(darkMode);
     setKey && setApiKeyDialogOpen(isOpen)
   }
 
@@ -176,8 +176,8 @@ function App() {
       setApiKey(storedApiKey);
     } else {
       // Show API key dialog if no API key is found
-      if (window.onChatToggle) {
-        window.onChatToggle = (isOpen) => onToggleChatApp(isOpen, true);   
+      if (window.isEmbedded) {
+        window.onChatToggle = (isOpen, darkMode) => onToggleChatApp(isOpen, darkMode, true);   
       } else {
         setApiKeyDialogOpen(true);
       }
@@ -194,11 +194,24 @@ function App() {
         setConversations([]);
       }
     }
+
+    const storedDarkMode = localStorage.getItem(DARK_MODE_STORAGE_KEY);
+    if (storedDarkMode) {
+      const isDarkModeEnabled = JSON.parse(storedDarkMode);
+      setDarkMode(isDarkModeEnabled);
+      window.isDarkMode = isDarkModeEnabled;
+    } else {
+      // If no dark mode setting is found, default to system preference
+      const prefersDarkMode = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+      setDarkMode(prefersDarkMode);
+      window.isDarkMode = prefersDarkMode;
+      localStorage.setItem(DARK_MODE_STORAGE_KEY, JSON.stringify(prefersDarkMode));
+    }
   }, []);
 
   useEffect(() => {
     if (apiKey && window.onChatToggle) {
-      window.onChatToggle = (isOpen) => onToggleChatApp(isOpen);
+      window.onChatToggle = (isOpen) => onToggleChatApp(isOpen, darkMode, false);
     }
   }, [apiKey])
 
@@ -346,7 +359,7 @@ function App() {
       // Update messages state
       setMessages(finalMessages);
       
-      // Save conversation to local storage
+      // Save conversation to local storagestorage
       saveConversation(finalMessages, selectedAgent);
       
     } catch (error) {
