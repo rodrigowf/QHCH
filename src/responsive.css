@@ -1,0 +1,212 @@
+/* Responsive Design */
+@media (max-width: 1200px) {
+    :root {
+        --toc-width: 250px;
+        --content-width: 800px;
+    }
+    
+    .container {
+        gap: 1rem;
+    }
+    
+    main {
+        padding: 1.5rem;
+    }
+}
+
+@media (max-width: 900px) {
+    .container {
+        grid-template-columns: 100% !important; /* Force single column immediately */
+        width: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        gap: 0 !important;
+        display: block !important; /* Force block layout on mobile */
+    }
+
+    main {
+        width: 100% !important;
+        max-width: 100% !important;
+        margin: 0 !important;
+        padding: 1rem !important;
+        box-sizing: border-box !important;
+        overflow-x: hidden !important;
+    }
+
+    /* Force all content to stay within viewport */
+    main > * {
+        width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box;
+    }
+
+    nav#toc {
+        height: auto;
+        max-height: 300px;
+        position: static;
+        border-right: none;
+        border-bottom: 1px solid var(--border-color);
+        padding: 1rem;
+    }
+    
+    .toc-title {
+        text-align: center;
+        margin-bottom: 1rem;
+    }
+    
+    .header-content h1 {
+        font-size: 2rem;
+        margin: 0 0 0.5rem;
+        line-height: 1.2;
+    }
+    
+    .subtitle {
+        font-size: 1rem;
+        margin: 0.5rem 0;
+        padding: 0 0.5rem;
+    }
+    
+    .links {
+        margin-top: 1rem;
+        display: flex;
+        justify-content: center;
+        gap: 1rem;
+    }
+    
+    .links a {
+        display: inline-block;
+        padding: 0.5rem 0.75rem;
+        background-color: rgba(255, 255, 255, 0.15);
+        border-radius: 4px;
+        font-size: 0.9rem;
+        transition: all 0.3s ease;
+    }
+    
+    .links a:hover {
+        background-color: rgba(255, 255, 255, 0.25);
+        transform: translateY(-2px);
+    }
+    
+    main h1 { font-size: 2rem; }
+    main h2 { font-size: 1.75rem; }
+    main h3 { font-size: 1.4rem; }
+    main h4 { font-size: 1.1rem; }
+    
+    main {
+        margin: 0;
+        padding: 1rem;
+        border-radius: 0;
+    }
+
+    /* Ensure all content stays within bounds */
+    main pre, 
+    main code,
+    main table,
+    main img {
+        max-width: 100%;
+        white-space: pre-wrap;
+    }
+
+    main img,
+    main .katex-display {
+        max-width: 100%;
+        overflow-x: auto;
+    }
+
+    .katex-display > .katex {
+        max-width: 100%;
+        overflow-x: auto;
+        overflow-y: hidden;
+    }
+
+    body {
+        min-width: 100% !important;
+        width: 100% !important;
+        overflow-x: hidden !important;
+    }
+
+    #content {
+        width: 100% !important;
+        max-width: 100% !important;
+        overflow-x: hidden !important;
+    }
+}
+
+/* Add styles for very small screens */
+@media (max-width: 480px) {
+    main {
+        padding: 0.75rem;
+    }
+
+    main h1 { 
+        font-size: 1.75rem; 
+    }
+
+    main h2 { 
+        font-size: 1.5rem; 
+    }
+
+    main p {
+        font-size: 1rem;
+    }
+
+    header {
+        padding: 1.25rem 0.75rem;
+    }
+    
+    .header-content h1 {
+        font-size: 1.75rem;
+    }
+    
+    .subtitle {
+        font-size: 0.9rem;
+    }
+    
+    .links {
+        flex-direction: row;
+        flex-wrap: wrap;
+    }
+    
+    .links a {
+        margin: 0.25rem;
+        padding: 0.4rem 0.6rem;
+        font-size: 0.85rem;
+    }
+}
+
+/* Print Styles */
+@media print {
+    .container {
+        display: block;
+    }
+
+    nav#toc {
+        display: none;
+    }
+
+    main {
+        max-width: none;
+        padding: 0;
+        box-shadow: none;
+    }
+
+    footer {
+        display: none;
+    }
+    
+    .katex-display {
+        break-inside: avoid;
+        box-shadow: none;
+        background: none;
+        padding: 1rem 0;
+    }
+    
+    main h1, main h2, main h3 {
+        break-after: avoid;
+    }
+    
+    main p {
+        orphans: 3;
+        widows: 3;
+    }
+}

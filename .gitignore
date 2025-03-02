@@ -11,6 +11,8 @@ logs/
 # Debug files
 debug/
 
+build/
+
 # Environment variables
 .env
 .env.local

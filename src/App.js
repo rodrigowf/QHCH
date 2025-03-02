@@ -4,6 +4,9 @@ import ChatIcon from '@mui/icons-material/Chat';
 import CloseIcon from '@mui/icons-material/Close';
 import ContentPage from './Content/Page';
 import Chat from './Chat/Main';
+import './global.css';
+import './responsive.css';
+import './scroll.css';
 
 const MergedApp = () => {
   const [chatOpen, setChatOpen] = useState(false);
@@ -18,7 +21,7 @@ const MergedApp = () => {
   };
 
   return (
-    <Box sx={{ position: 'relative' }}>
+    <Box className={isDarkMode ? 'dark-mode' : ''} sx={{ position: 'relative' }}>
       {!chatOpen ? (
         <ContentPage isDarkMode={isDarkMode} toggleDarkMode={toggleDarkMode}/>
       ) : (
@@ -57,9 +60,10 @@ const MergedApp = () => {
           right: 16,
           zIndex: 2000,
           bgcolor: !chatOpen ? '#57f' : '#f57',
-          padding: 2,
-          textTransform: "none",
+          padding: 1.5,
+          textTransform: 'none',
           color: '#fff',
+          borderRadius: '16px',
           '&:hover': { bgcolor: !chatOpen ? '#35d' : '#d35' }
         }}
         aria-label="Open Chat"

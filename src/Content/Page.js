@@ -1,10 +1,13 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { GlobalStyle, Container, Header, Main, Footer, Loading, Title, Subtitle, Links, Nav, TOCTitle, TOCList, TOCItem, TOCLink } from './styled.components';
 import { marked } from 'marked';
+import { Tooltip, IconButton } from '@mui/material';
+import Brightness4Icon from '@mui/icons-material/Brightness4';
+import Brightness7Icon from '@mui/icons-material/Brightness7';
 import 'katex/dist/katex.min.css';
 import '@fontsource/material-icons';
 
-import QHPH_PATH from './QHPH.md';
+const QHPH_PATH = "https://raw.githubusercontent.com/rodrigowf/QHPH/refs/heads/main/QHPH.md";
 
 
 // Helper function to generate TOC entries from markdown content
@@ -35,7 +38,7 @@ marked.use({
   smartypants: true
 });
 
-const ContentPage = () => {
+const ContentPage = ({isDarkMode, toggleDarkMode}) => {
   const [markdownContent, setMarkdownContent] = useState("");
   const [htmlContent, setHtmlContent] = useState("");
   const [toc, setTOC] = useState([]);
@@ -83,7 +86,7 @@ const ContentPage = () => {
   }, [htmlContent]);
 
   return (
-    <>
+    <div className={isDarkMode ? 'dark-mode' : ''}>
       <GlobalStyle />
       <Container>
         <Header id="main-header">
@@ -95,6 +98,17 @@ const ContentPage = () => {
               <a href="https://github.com/rodrigowf/QHPH/blob/main/QHPH.md" target="_blank" rel="noopener noreferrer">View Raw Markdown</a>
             </Links>
           </div>
+          <Tooltip 
+            title={isDarkMode ? "Switch to Light Mode" : "Switch to Dark Mode"}
+            sx={{
+              position: 'absolute',
+              right: 24
+            }}
+          >
+            <IconButton color="inherit" onClick={toggleDarkMode}>
+              {isDarkMode ? <Brightness7Icon /> : <Brightness4Icon />}
+            </IconButton>
+          </Tooltip>
         </Header>
         <Nav id="toc">
           <TOCTitle>Contents</TOCTitle>
@@ -113,7 +127,7 @@ const ContentPage = () => {
           <p>© 2024 Rodrigo Werneck Franco. All rights reserved.</p>
         </Footer>
       </Container>
-    </>
+    </div>
   );
 };
 

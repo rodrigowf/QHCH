@@ -26,7 +26,7 @@ fs.readdir(path.join(buildDir, 'static/js'), (err, files) => {
     if (mainJs) {
         copyAndRename(
             path.join(buildDir, 'static/js', mainJs),
-            path.join(assetsDir, 'chat.js')
+            path.join(assetsDir, 'script.js')
         );
     }
 });
@@ -39,7 +39,7 @@ fs.readdir(path.join(buildDir, 'static/css'), (err, files) => {
     if (mainCss) {
         copyAndRename(
             path.join(buildDir, 'static/css', mainCss),
-            path.join(assetsDir, 'chat.css')
+            path.join(assetsDir, 'style.css')
         );
     }
 });

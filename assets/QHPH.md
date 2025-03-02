@@ -1,22 +1,19 @@
-const QHPH = `
 # **Quantum Holographic Perception Hypothesis (QHPH)**
 
 ### *Formulated by Rodrigo Werneck Franco, expanded with insights from quantum mechanics, neuroscience, general relativity, and philosophy of mind.*
 
 ## **1. Fundamental Axiom: Superposition = The Physically Real Perception**
 
-1. **Superposition \(\neq\) Potentialities**  
+1. **Superposition $\neq$ Potentialities**  
    In QHPH, the wavefunction of a neural system (e.g., microtubules in the brain) isn't a set of un-chosen classical states. It is **one single physically real arrangement** that the system "lives" as *the direct, continuous, holographic experience.*  
 2. **Continuous 'Holographic' Field**  
    This wavefunction's amplitude and phase encode everything about the perceived reality. If we expand to multiple microtubules or brain regions, they unify into **one** wavefunction describing the entire integrated field.
 
 **Mathematically**:  
-Let \(\mathcal{H}\) be the Hilbert space of the neural quantum system. A **superposition** is
+Let $\mathcal{H}$ be the Hilbert space of the neural quantum system. A **superposition** is
 
-\[
-|\Psi_{\!Q}\rangle \;=\; \sum_{i} c_i \,|\psi_i\rangle,
-\]
-with \(\sum_i |c_i|^2 = 1\). Instead of enumerating classical "options," QHPH states \(\lvert \Psi_{\!Q}\rangle\) *is* the physically real, currently felt arrangement.
+$$|\Psi_{\!Q}\rangle \;=\; \sum_{i} c_i \,|\psi_i\rangle,$$
+with $\sum_i |c_i|^2 = 1$. Instead of enumerating classical "options," QHPH states $\lvert \Psi_{\!Q}\rangle$ *is* the physically real, currently felt arrangement.
 
 ---
 
@@ -24,30 +21,28 @@ with \(\sum_i |c_i|^2 = 1\). Instead of enumerating classical "options," QHPH st
 
 ### 2.1. Projection as Physical Reconfiguration
 
-When the system "decides" or "focuses" on some outcome, we represent it by a projection operator \(P_{\text{dec}}\). The wavefunction changes to:
+When the system "decides" or "focuses" on some outcome, we represent it by a projection operator $P_{\text{dec}}$. The wavefunction changes to:
 
-\[|\Psi_{\text{collapsed}}\rangle = \frac{P_{\text{dec}}\,|\Psi_{\!Q}\rangle}{\|P_{\text{dec}}\,|\Psi_{\!Q}\rangle\|}.\]
+$$|\Psi_{\text{collapsed}}\rangle = \frac{P_{\text{dec}}\,|\Psi_{\!Q}\rangle}{\|P_{\text{dec}}\,|\Psi_{\!Q}\rangle\|}.$$
 
 1. **Local Vantage**: This is a real, discrete "collapse" that modifies the previously continuous arrangement, generating a new "moment" of consciousness or action.  
 2. **Global**: Depending on your interpretation, this is either an actual universal collapse (objective reduction) or a many-worlds branching event from an external vantage.
 
 ### 2.2. Time Evolution (Between Collapses)
 
-Between such decisions, the wavefunction follows **unitary** evolution under a Hamiltonian \(H\):
+Between such decisions, the wavefunction follows **unitary** evolution under a Hamiltonian $H$:
 
-\[i\hbar\,\frac{d}{dt}|\Psi_{\!Q}(t)\rangle = H\,|\Psi_{\!Q}(t)\rangle,\]
-where \(H\) includes local resonances (e.g., microtubule vibrational modes), couplings among cortical regions, and potentially gravitational or environment interactions.
+$$i\hbar\,\frac{d}{dt}|\Psi_{\!Q}(t)\rangle = H\,|\Psi_{\!Q}(t)\rangle,$$
+where $H$ includes local resonances (e.g., microtubule vibrational modes), couplings among cortical regions, and potentially gravitational or environment interactions.
 
 ---
 
 ## **3. Entanglement as Mechanism for Unity and Scale**
 
 1. **Local vs. Global Entangled Fields**  
-   - Each microtubule might have a wavefunction \(|\phi_k\rangle\). When interaction Hamiltonians couple them, a **joint** wavefunction forms:
+   - Each microtubule might have a wavefunction $|\phi_k\rangle$. When interaction Hamiltonians couple them, a **joint** wavefunction forms:
 
-     \[
-     |\Psi_{\text{entangled}}\rangle \;=\; \sum_{i,j,\ldots} \alpha_{ij\ldots}\,\bigl|\phi_i^{(1)}\rangle \otimes \bigl|\phi_j^{(2)}\rangle \otimes \cdots,
-     \]
+     $$|\Psi_{\text{entangled}}\rangle \=\ \sum_{i,j,\ldots} \alpha_{ij\ldots}\,\bigl|\phi_i^{(1)}\rangle \otimes \bigl|\phi_j^{(2)}\rangle \otimes \cdots,$$
      unifying the arrangement.
 
 2. **Multiple Concurrent Subsystems**  
@@ -55,22 +50,22 @@ where \(H\) includes local resonances (e.g., microtubule vibrational modes), cou
    - If they become strongly coupled, they merge with the main wavefunction, shifting or expanding the conscious field.
 
 3. **Measuring Entanglement**  
-   For any bipartition, define \(\rho_A = \mathrm{Tr}_B (|\Psi\rangle\langle \Psi|)\) and compute entanglement entropy \(S(\rho_A)\). A high \(S(\rho_A)\) indicates robust unity across the neural subsets.
+   For any bipartition, define $\rho_A = \mathrm{Tr}_B (|\Psi\rangle\langle \Psi|)$ and compute entanglement entropy $S(\rho_A)$. A high $S(\rho_A)$ indicates robust unity across the neural subsets.
 
 ---
 
 ## **4. Time-Spanning or Covariant Formulation**
 
-1. **Wave Functional \(\Psi[\phi(x)]\)**  
-   Instead of a single \(|\Psi(t)\rangle\), we can define \(\Psi[\phi(x)]\) across spacetime. A path integral form:
+1. **Wave Functional $\Psi[\phi(x)]$**  
+   Instead of a single $|\Psi(t)\rangle$, we can define $\Psi[\phi(x)]$ across spacetime. A path integral form:
 
-   \[\Psi[\phi(x)] = \int \mathcal{D}\phi\;\exp\!\Bigl(\tfrac{i}{\hbar}S[\phi,g_{\mu\nu}]\Bigr),\]
+   $$|\Psi_{\phi(x)}\rangle \=\ \int \mathcal{D}\phi\;\exp\!\Bigl(\tfrac{i}{\hbar}S[\phi,g_{\mu\nu}]\Bigr),$$
    includes gravitational or neural field terms, so correlation functions can bridge multiple times.
 
 2. **Two-State Vector Formalism (TSVF)**  
-   If we add a future boundary condition \(\langle \phi(T)|\), the amplitude for an event is
+   If we add a future boundary condition $\langle \phi(T)|$, the amplitude for an event is
 
-   \[\langle \phi(T)|\,|\psi(t)\rangle,\]
+   $$\langle \phi(T)|\,|\psi(t)\rangle,$$
    potentially explaining memory or intuitive "future" correlations. In QHPH, *the entire wave functional is still the physically real arrangement*.
 
 ---
@@ -78,9 +73,9 @@ where \(H\) includes local resonances (e.g., microtubule vibrational modes), cou
 ## **5. Incorporating Objective Collapse (Orch-OR)**
 
 1. **Threshold-Based Reduction**  
-   In **Orch-OR** or Penrose's gravitational approach, superpositions are spontaneously unstable above some gravitational self-energy \(E_G\). The wavefunction collapses in a timescale:
+   In **Orch-OR** or Penrose's gravitational approach, superpositions are spontaneously unstable above some gravitational self-energy $E_G$. The wavefunction collapses in a timescale:
 
-   \[\tau \sim \frac{\hbar}{E_G}.\]
+   $$\tau \sim \frac{\hbar}{E_G}.$$
 
 2. **Self-Collapse**  
    - No external measurement needed. The wavefunction *internally* triggers a collapse from the vantage of the system.  
@@ -113,10 +108,10 @@ Hence, QHPH can align with either objective collapse or many-worlds, with the lo
 ## **8. Cognitive and Neuroscientific Perspectives**
 
 1. **Perception**:  
-   - The real-time wavefunction \(|\Psi_{\!Q}\rangle\) is the "holographic field" of sensory and conceptual content.  
+   - The real-time wavefunction $|\Psi_{\!Q}\rangle$ is the "holographic field" of sensory and conceptual content.  
    - Synchronous neural oscillations modulate couplings, shaping how entangled sub-networks unify.  
 2. **Attention / Decision**:  
-   - A partial measurement operator \(P_{\text{dec}}\) leads to discrete "focal points" from within the continuous arrangement.  
+   - A partial measurement operator $P_{\text{dec}}$ leads to discrete "focal points" from within the continuous arrangement.  
 3. **Memory**:  
    - Past states remain correlated if not forcibly reconfigured. Time-spanning wavefunction explains robust recall.  
 4. **Collective or Planetary**:  
@@ -127,7 +122,7 @@ Hence, QHPH can align with either objective collapse or many-worlds, with the lo
 ## **9. Single Particle Scenario: A Minimal Example**
 
 1. **Standard QM**:  
-   - A single particle's wavefunction \(\Psi(x)\) remains in superposition if isolated. No spontaneous collapse in the simplest interpretation.  
+   - A single particle's wavefunction $\Psi(x)$ remains in superposition if isolated. No spontaneous collapse in the simplest interpretation.  
 2. **Objective Collapse**:  
    - If Penrose OR or GRW-like approach is correct, even a single particle can collapse itself from inside under certain thresholds.  
 3. **Choice**:  
@@ -138,9 +133,9 @@ Hence, QHPH can align with either objective collapse or many-worlds, with the lo
 ## **10. Final Consolidated Picture**
 
 1. **Superposition is the Real, Continuous Field**  
-   \[|\Psi_{\!Q}\rangle = \sum_i c_i\,|\psi_i\rangle \quad \text{(not an unpicked set, but one physically actual arrangement).}\]
+   $$|\Psi_{\!Q}\rangle = \sum_i c_i\,|\psi_i\rangle \quad \text{(not an unpicked set, but one physically actual arrangement).}$$
 2. **Collapse (Decision) Is a Projection**  
-   \[|\Psi_{\text{collapsed}}\rangle = \frac{P_{\text{dec}}\,|\Psi_{\!Q}\rangle}{\|P_{\text{dec}}\,|\Psi_{\!Q}\rangle\|}, \quad \text{the vantage sees it as a distinct "choice."}\]
+   $$|\Psi_{\text{collapsed}}\rangle = \frac{P_{\text{dec}}\,|\Psi_{\!Q}\rangle}{\|P_{\text{dec}}\,|\Psi_{\!Q}\rangle\|}, \quad \text{the vantage sees it as a distinct "choice."}$$
 3. **Entanglement** Binds Microtubules / Brain Regions**  
    Creating the unitary sense of "one" experience (or partial concurrency of unconscious sub-networks).  
 4. **Time-Spanning** Correlations**  
@@ -150,6 +145,3 @@ Hence, QHPH can align with either objective collapse or many-worlds, with the lo
    - **Many-Worlds** sees each "decision" as a branching. Both are consistent with QHPH from the local vantage.  
 
 Thus, the **Quantum Holographic Perception Hypothesis (QHPH)** fully integrates quantum superposition, entanglement, potential objective collapse (Orch-OR style), and time-spanning wavefunction formalisms to explain how consciousness arises as the **physically real arrangement** that a neural system literally "feels," while decisions or attentional shifts appear as discrete collapses or reconfigurations.
-`
-
-export default QHPH;

@@ -20,9 +20,29 @@ export const GlobalStyle = createGlobalStyle`
     --shadow-lg: 0 10px 15px rgba(0,0,0,0.1);
     --transition-speed: 0.3s;
     --toc-width: 300px;
-    --content-width: 900px;
+    --content-width: 1200px;
     --mobile-width: 900px;
     --text-shadow: 0 3px 6px rgba(0,0,0,0.3);
+  }
+
+
+  /* Dark mode variables */
+  .dark-mode {
+      --primary-color: #93c5fd;
+      --secondary-color: #38bdf8;
+      --accent-color: #f87171;
+      --background-color: #161616;
+      --text-color: #e2e8f0;
+      --border-color: #2d3748;
+      --header-bg: linear-gradient(135deg, #313a47 0%, #195ba7 100%);
+      --code-bg: #282c34;
+      --blockquote-bg: #212121;
+      --toc-hover-bg: #2d3748;
+      --toc-bg: #161616;
+      --main-bg: #161616;
+      --shadow-sm: 0 2px 4px rgba(0,0,0,0.5);
+      --shadow-md: 0 4px 6px rgba(0,0,0,0.5);
+      --shadow-lg: 0 10px 15px rgba(0,0,0,0.5);
   }
 
   /* Base resets */
@@ -178,9 +198,13 @@ export const Main = styled.main`
 
   h1 { 
     font-size: 2.5rem; 
-    border-bottom: 2px solid var(--secondary-color);
+    border-bottom: 2px solid var(--text-color);
     padding-bottom: 0.5rem;
     margin-top: 0;
+  }
+
+  em {
+    color: var(--secondary-color);
   }
 
   h2 { 

@@ -454,6 +454,7 @@ function Chat({isDarkMode, toggleDarkMode}) {
         bgcolor: isDarkMode ? '#161616' : theme.palette.grey[100]
       }}>
         <AppBar 
+          className='chatAppBar'
           position="fixed" 
           sx={{ 
             bgcolor: isDarkMode ? '#0d47a1' : theme.palette.primary.main,
