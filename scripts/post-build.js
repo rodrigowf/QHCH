@@ -3,7 +3,7 @@ const path = require('path');
 
 // Paths
 const buildDir = path.join(__dirname, '../build');
-const rootDir = path.join(__dirname, '../../');
+const rootDir = path.join(__dirname, '../');
 const assetsDir = path.join(rootDir, 'assets');
 
 // Create assets directory if it doesn't exist

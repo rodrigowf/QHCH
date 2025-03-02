@@ -52,8 +52,7 @@ const DARK_MODE_STORAGE_KEY = 'qhph_dark_mode';
 
 const drawerWidth = 300;
 
-function App() {
-  const [appOpen, setAppOpen] = useState(true);
+function Chat({isDarkMode, toggleDarkMode}) {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
@@ -67,45 +66,44 @@ function App() {
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
   const [snackbarSeverity, setSnackbarSeverity] = useState('success');
-  const [darkMode, setDarkMode] = useState(false);
   
   const theme = createTheme({
     palette: {
-      mode: darkMode ? 'dark' : 'light',
+      mode: isDarkMode ? 'dark' : 'light',
       primary: {
-        main: darkMode ? '#1565c0' : '#2196f3',
-        light: darkMode ? '#1976d2' : '#64b5f6',
-        dark: darkMode ? '#0d47a1' : '#1976d2',
+        main: isDarkMode ? '#1565c0' : '#2196f3',
+        light: isDarkMode ? '#1976d2' : '#64b5f6',
+        dark: isDarkMode ? '#0d47a1' : '#1976d2',
       },
       background: {
-        default: darkMode ? '#0a0a0a' : '#f5f5f5',
-        paper: darkMode ? '#1e1e1e' : '#ffffff',
-        darker: darkMode ? '#161616' : '#f0f0f0',
+        default: isDarkMode ? '#0a0a0a' : '#f5f5f5',
+        paper: isDarkMode ? '#1e1e1e' : '#ffffff',
+        darker: isDarkMode ? '#161616' : '#f0f0f0',
       },
       grey: {
-        800: darkMode ? '#2d2d2d' : '#424242',
-        900: darkMode ? '#212121' : '#212121',
+        800: isDarkMode ? '#2d2d2d' : '#424242',
+        900: isDarkMode ? '#212121' : '#212121',
       },
     },
     components: {
       MuiCssBaseline: {
         styleOverrides: {
           body: {
-            backgroundColor: darkMode ? '#1e1e1e' : '#f5f5f5',
-            scrollbarColor: darkMode ? '#424242 #1a1a1a' : '#bdbdbd #f5f5f5',
+            backgroundColor: isDarkMode ? '#1e1e1e' : '#f5f5f5',
+            scrollbarColor: isDarkMode ? '#424242 #1a1a1a' : '#bdbdbd #f5f5f5',
             '&::-webkit-scrollbar': {
               width: '8px',
               height: '8px',
             },
             '&::-webkit-scrollbar-track': {
-              background: darkMode ? '#1a1a1a' : '#f5f5f5',
+              background: isDarkMode ? '#1a1a1a' : '#f5f5f5',
               borderRadius: '4px',
             },
             '&::-webkit-scrollbar-thumb': {
-              background: darkMode ? '#424242' : '#bdbdbd',
+              background: isDarkMode ? '#424242' : '#bdbdbd',
               borderRadius: '4px',
               '&:hover': {
-                background: darkMode ? '#616161' : '#9e9e9e',
+                background: isDarkMode ? '#616161' : '#9e9e9e',
               },
             },
           },
@@ -114,15 +112,15 @@ function App() {
       MuiDrawer: {
         styleOverrides: {
           paper: {
-            backgroundColor: darkMode ? '#161616' : '#ffffff',
-            borderRight: `1px solid ${darkMode ? '#2d2d2d' : '#e0e0e0'}`,
+            backgroundColor: isDarkMode ? '#161616' : '#ffffff',
+            borderRight: `1px solid ${isDarkMode ? '#2d2d2d' : '#e0e0e0'}`,
           },
         },
       },
       MuiSelect: {
         styleOverrides: {
           select: {
-            color: darkMode ? '#fff' : 'inherit',
+            color: isDarkMode ? '#fff' : 'inherit',
           },
         },
       },
@@ -130,13 +128,13 @@ function App() {
         styleOverrides: {
           root: {
             '&.Mui-selected': {
-              backgroundColor: darkMode ? '#2d2d2d' : '#e3f2fd',
+              backgroundColor: isDarkMode ? '#2d2d2d' : '#e3f2fd',
               '&:hover': {
-                backgroundColor: darkMode ? '#333333' : '#bbdefb',
+                backgroundColor: isDarkMode ? '#333333' : '#bbdefb',
               },
             },
             '&:hover': {
-              backgroundColor: darkMode ? '#252525' : '#f5f5f5',
+              backgroundColor: isDarkMode ? '#252525' : '#f5f5f5',
             },
           },
         },
@@ -147,27 +145,13 @@ function App() {
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const messagesEndRef = useRef(null);
 
-  const toggleDarkMode = () => {
-    const newMode = !darkMode;
-    setDarkMode(newMode);
-    window.isDarkMode = newMode;
-    localStorage.setItem(DARK_MODE_STORAGE_KEY, JSON.stringify(newMode));
-  };
-
-  const onToggleChatApp = (isOpen, darkMode, setKey = false) => {
-    setAppOpen(isOpen);
-    setDarkMode(darkMode);
-    setKey && setApiKeyDialogOpen(isOpen)
-  }
-
   useEffect(() => {
     if (isMobile) {
       setDrawerOpen(false);
-    } else if (appOpen) {
-      setDarkMode(window.isDarkMode);
+    } else {
       setDrawerOpen(true);
     }
-  }, [isMobile, appOpen]);
+  }, [isMobile]);
 
   // Load API key and conversations from local storage on component mount
   useEffect(() => {
@@ -175,12 +159,7 @@ function App() {
     if (storedApiKey) {
       setApiKey(storedApiKey);
     } else {
-      // Show API key dialog if no API key is found
-      if (window.isEmbedded) {
-        window.onChatToggle = (isOpen, darkMode) => onToggleChatApp(isOpen, darkMode, true);   
-      } else {
         setApiKeyDialogOpen(true);
-      }
     }
 
     // Load conversations from local storage
@@ -194,26 +173,7 @@ function App() {
         setConversations([]);
       }
     }
-
-    const storedDarkMode = localStorage.getItem(DARK_MODE_STORAGE_KEY);
-    if (storedDarkMode) {
-      const isDarkModeEnabled = JSON.parse(storedDarkMode);
-      setDarkMode(isDarkModeEnabled);
-      window.isDarkMode = isDarkModeEnabled;
-    } else {
-      // If no dark mode setting is found, default to system preference
-      const prefersDarkMode = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-      setDarkMode(prefersDarkMode);
-      window.isDarkMode = prefersDarkMode;
-      localStorage.setItem(DARK_MODE_STORAGE_KEY, JSON.stringify(prefersDarkMode));
-    }
   }, []);
-
-  useEffect(() => {
-    if (apiKey && window.onChatToggle) {
-      window.onChatToggle = (isOpen) => onToggleChatApp(isOpen, darkMode, false);
-    }
-  }, [apiKey])
 
   // Save conversations to local storage whenever they change
   useEffect(() => {
@@ -408,7 +368,7 @@ function App() {
         marginBottom: isMobile ? 2 : 0,
         minWidth: 190, 
         '& .MuiOutlinedInput-root': {
-          bgcolor: darkMode ? '#2d2d2d' : theme.palette.background.paper,
+          bgcolor: isDarkMode ? '#2d2d2d' : theme.palette.background.paper,
           borderRadius: 1,
           '& fieldset': {
             borderColor: 'transparent',
@@ -421,24 +381,24 @@ function App() {
           }
         },
         '& .MuiSelect-select': {
-          color: darkMode ? '#fff' : theme.palette.text.primary,
+          color: isDarkMode ? '#fff' : theme.palette.text.primary,
         },
         '& .MuiInputLabel-root': {
-          color: darkMode ? '#fff' : theme.palette.text.primary,
+          color: isDarkMode ? '#fff' : theme.palette.text.primary,
           '&.Mui-focused': {
-            color: darkMode ? '#fff' : theme.palette.text.primary,
+            color: isDarkMode ? '#fff' : theme.palette.text.primary,
           }
         },
         '& .MuiInputLabel-shrink': {
           transform: 'translate(14px, -6px) scale(0.75)',
           '&:not(.Mui-focused)': {
-            color: darkMode ? '#fff' : theme.palette.text.primary,
+            color: isDarkMode ? '#fff' : theme.palette.text.primary,
           }
         }
       }}>
         <InputLabel sx={{ 
           '&.MuiInputLabel-shrink': {
-            background: darkMode ? '#2d2d2d' : theme.palette.primary.main,
+            background: isDarkMode ? '#2d2d2d' : theme.palette.primary.main,
             paddingX: '4px'
           }
         }}>Select Agent</InputLabel>
@@ -449,9 +409,9 @@ function App() {
           MenuProps={{
             PaperProps: {
               sx: {
-                bgcolor: darkMode ? '#2d2d2d' : theme.palette.background.paper,
+                bgcolor: isDarkMode ? '#2d2d2d' : theme.palette.background.paper,
                 '& .MuiMenuItem-root': {
-                  color: darkMode ? '#fff' : theme.palette.text.primary,
+                  color: isDarkMode ? '#fff' : theme.palette.text.primary,
                 }
               }
             }
@@ -476,15 +436,13 @@ function App() {
           <KeyIcon />
         </IconButton>
       </Tooltip>
-      <Tooltip title={darkMode ? "Switch to Light Mode" : "Switch to Dark Mode"}>
+      <Tooltip title={isDarkMode ? "Switch to Light Mode" : "Switch to Dark Mode"}>
         <IconButton color="inherit" onClick={toggleDarkMode}>
-          {darkMode ? <Brightness7Icon /> : <Brightness4Icon />}
+          {isDarkMode ? <Brightness7Icon /> : <Brightness4Icon />}
         </IconButton>
       </Tooltip>
     </Box>
   );
-
-  if (!appOpen) return '';
 
   return (
     <ThemeProvider theme={theme}>
@@ -493,13 +451,13 @@ function App() {
         height: '100vh',
         display: 'flex',
         flexDirection: 'column',
-        bgcolor: darkMode ? '#161616' : theme.palette.grey[100]
+        bgcolor: isDarkMode ? '#161616' : theme.palette.grey[100]
       }}>
         <AppBar 
           position="fixed" 
           sx={{ 
-            bgcolor: darkMode ? '#0d47a1' : theme.palette.primary.main,
-            boxShadow: darkMode ? 'none' : 3,
+            bgcolor: isDarkMode ? '#0d47a1' : theme.palette.primary.main,
+            boxShadow: isDarkMode ? 'none' : 3,
             zIndex: (theme) => theme.zIndex.drawer + 1
           }}
         >
@@ -528,7 +486,7 @@ function App() {
         <Box sx={{ 
           display: 'flex', 
           flexGrow: 1,
-          bgcolor: darkMode ? '#161616' : theme.palette.background.default 
+          bgcolor: isDarkMode ? '#161616' : theme.palette.background.default 
         }}>
           <Drawer
             variant={isMobile ? 'temporary' : 'persistent'}
@@ -540,7 +498,7 @@ function App() {
               '& .MuiDrawer-paper': {
                 width: drawerWidth,
                 boxSizing: 'border-box',
-                bgcolor: darkMode ? '#161616' : 'white',
+                bgcolor: isDarkMode ? '#161616' : 'white',
                 top: { xs: 0, sm: 64 }, // 64px is the default AppBar height
                 height: { xs: '100%', sm: 'calc(100% - 64px)' }, // Subtract AppBar height on desktop
                 '& > .MuiToolbar-root': { // Hide the toolbar spacer on desktop
@@ -550,7 +508,7 @@ function App() {
             }}
             PaperProps={{
               sx: {
-                bgcolor: darkMode ? '#161616' : 'white',
+                bgcolor: isDarkMode ? '#161616' : 'white',
               }
             }}
           >
@@ -560,7 +518,7 @@ function App() {
               height: '100%',
               display: 'flex',
               flexDirection: 'column',
-              bgcolor: darkMode ? '#161616' : theme.palette.background.paper,
+              bgcolor: isDarkMode ? '#161616' : theme.palette.background.paper,
             }}>
               <Box sx={{ 
                 display: 'flex', 
@@ -576,7 +534,7 @@ function App() {
                   sx={{
                     borderRadius: 1,
                     '&:hover': {
-                      bgcolor: darkMode ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.04)',
+                      bgcolor: isDarkMode ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.04)',
                     }
                   }}
                 >
@@ -664,7 +622,7 @@ function App() {
             py: 3,
             gap: 2,
             height: 'calc(100vh - 60px)',
-            bgcolor: darkMode ? '#161616' : 'transparent',
+            bgcolor: isDarkMode ? '#161616' : 'transparent',
             ...(isMobile && {
               padding: '12px',  // Reduce padding on mobile
               maxWidth: '100% !important', // Override Material-UI's maxWidth
@@ -677,7 +635,7 @@ function App() {
               overflow: 'hidden',
               boxShadow: 3,
               borderRadius: isMobile ? 1 : 2,
-              bgcolor: darkMode ? '#1e1e1e' : theme.palette.background.paper,
+              bgcolor: isDarkMode ? '#1e1e1e' : theme.palette.background.paper,
               height: '100%',
               overflowY: 'auto'
             }}>
@@ -700,7 +658,7 @@ function App() {
                       maxWidth: '80%',
                       bgcolor: msg.role === 'user' ? 
                         '#2196f3' : 
-                        darkMode ? 
+                        isDarkMode ? 
                           '#2d2d2d' : 
                           'rgba(0, 0, 0, 0.05)',
                       color: msg.role === 'user' ? 
@@ -709,8 +667,8 @@ function App() {
                       borderRadius: 2,
                       px: 2.5,
                       py: 1.5,
-                      boxShadow: darkMode ? 'none' : 1,
-                      border: msg.role !== 'user' && darkMode ? '1px solid rgba(255, 255, 255, 0.1)' : 'none'
+                      boxShadow: isDarkMode ? 'none' : 1,
+                      border: msg.role !== 'user' && isDarkMode ? '1px solid rgba(255, 255, 255, 0.1)' : 'none'
                     }}>
                       <Typography 
                         variant="body1" 
@@ -729,8 +687,8 @@ function App() {
 
               <Box sx={{
                 p: 2,
-                borderTop: `1px solid ${darkMode ? 'rgba(255, 255, 255, 0.1)' : theme.palette.divider}`,
-                bgcolor: darkMode ? '#161616' : theme.palette.background.paper,
+                borderTop: `1px solid ${isDarkMode ? 'rgba(255, 255, 255, 0.1)' : theme.palette.divider}`,
+                bgcolor: isDarkMode ? '#161616' : theme.palette.background.paper,
               }}>
                 <Box sx={{
                   display: 'flex',
@@ -754,21 +712,21 @@ function App() {
                     sx={{
                       '& .MuiOutlinedInput-root': {
                         borderRadius: 2,
-                        backgroundColor: darkMode ? '#2d2d2d' : 'rgba(0, 0, 0, 0.02)',
+                        backgroundColor: isDarkMode ? '#2d2d2d' : 'rgba(0, 0, 0, 0.02)',
                         '&:hover': {
-                          backgroundColor: darkMode ? '#333333' : 'rgba(0, 0, 0, 0.04)',
+                          backgroundColor: isDarkMode ? '#333333' : 'rgba(0, 0, 0, 0.04)',
                         },
                         '&.Mui-focused': {
-                          backgroundColor: darkMode ? '#333333' : 'rgba(0, 0, 0, 0.06)',
+                          backgroundColor: isDarkMode ? '#333333' : 'rgba(0, 0, 0, 0.06)',
                         },
                         '& fieldset': {
                           borderColor: 'transparent',
                         },
                         '&:hover fieldset': {
-                          borderColor: darkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.2)',
+                          borderColor: isDarkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.2)',
                         },
                         '&.Mui-focused fieldset': {
-                          borderColor: darkMode ? 'rgba(255, 255, 255, 0.2)' : theme.palette.primary.main,
+                          borderColor: isDarkMode ? 'rgba(255, 255, 255, 0.2)' : theme.palette.primary.main,
                         }
                       }
                     }}
@@ -781,7 +739,7 @@ function App() {
                       borderRadius: 2,
                       minWidth: '50px',
                       height: '56px',
-                      boxShadow: darkMode ? 'none' : 2,
+                      boxShadow: isDarkMode ? 'none' : 2,
                       bgcolor: '#2196f3',
                       '&:hover': {
                         bgcolor: '#1976d2',
@@ -802,15 +760,15 @@ function App() {
           onClose={() => setApiKeyDialogOpen(false)}
           PaperProps={{
             sx: {
-              bgcolor: darkMode ? '#1e1e1e' : 'white',
-              color: darkMode ? 'white' : 'inherit',
+              bgcolor: isDarkMode ? '#1e1e1e' : 'white',
+              color: isDarkMode ? 'white' : 'inherit',
             }
           }}
         >
           <DialogTitle>OpenAI API Key</DialogTitle>
           <DialogContent>
             <DialogContentText
-              sx={{ color: darkMode ? 'rgba(255, 255, 255, 0.7)' : 'rgba(0, 0, 0, 0.6)' }}
+              sx={{ color: isDarkMode ? 'rgba(255, 255, 255, 0.7)' : 'rgba(0, 0, 0, 0.6)' }}
             >
               Please enter your OpenAI API key to use this application. Your key will be stored locally in your browser and never sent to our servers.
             </DialogContentText>
@@ -825,16 +783,16 @@ function App() {
               onChange={(e) => setTempApiKey(e.target.value)}
               sx={{
                 '& .MuiOutlinedInput-root': {
-                  bgcolor: darkMode ? 'rgba(255, 255, 255, 0.05)' : 'transparent',
+                  bgcolor: isDarkMode ? 'rgba(255, 255, 255, 0.05)' : 'transparent',
                   '& fieldset': {
-                    borderColor: darkMode ? 'rgba(255, 255, 255, 0.2)' : 'rgba(0, 0, 0, 0.23)',
+                    borderColor: isDarkMode ? 'rgba(255, 255, 255, 0.2)' : 'rgba(0, 0, 0, 0.23)',
                   },
                 },
                 '& .MuiInputLabel-root': {
-                  color: darkMode ? 'rgba(255, 255, 255, 0.7)' : 'rgba(0, 0, 0, 0.6)',
+                  color: isDarkMode ? 'rgba(255, 255, 255, 0.7)' : 'rgba(0, 0, 0, 0.6)',
                 },
                 '& input': {
-                  color: darkMode ? 'white' : 'inherit',
+                  color: isDarkMode ? 'white' : 'inherit',
                 }
               }}
             />
@@ -861,10 +819,10 @@ function App() {
             severity={snackbarSeverity} 
             sx={{ 
               width: '100%',
-              bgcolor: darkMode ? '#2d2d2d' : undefined,
-              color: darkMode ? 'white' : undefined,
+              bgcolor: isDarkMode ? '#2d2d2d' : undefined,
+              color: isDarkMode ? 'white' : undefined,
               '& .MuiAlert-icon': {
-                color: darkMode ? 'white' : undefined,
+                color: isDarkMode ? 'white' : undefined,
               }
             }}
           >
@@ -876,4 +834,4 @@ function App() {
   );
 }
 
-export default App;
+export default Chat;
