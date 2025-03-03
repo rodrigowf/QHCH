@@ -333,16 +333,16 @@ export const TOCLink = styled.a`
 
 export const Main = styled.main`
   grid-area: main;
-  padding: 2rem;
-  background: var(--main-bg);
+  padding: ${props => props.isMobile ? '2rem 1.4rem' : '2rem'};
+  margin: ${props => props.isMobile ? '0 0.5rem' : 'auto'};
+  width: ${props => props.isMobile ? 'calc(100% - 1rem)' : '100%'};
   max-width: var(--content-width);
-  width: 100%;
+  background: var(--main-bg);
   box-shadow: var(--shadow-md);
   border-radius: 8px;
   min-width: 0;
   overflow-wrap: break-word;
   overflow-x: hidden;
-  margin: auto;
   color: var(--text-color);
 
   h1, h2, h3, h4 {
@@ -383,7 +383,7 @@ export const Main = styled.main`
   }
   ul, ol {
     margin: 1rem 0;
-    padding-left: 2rem;
+    padding-left: ${props => props.isMobile ? '0.8rem' : '2rem'};
   }
   li {
     margin: 0.75rem 0;

@@ -74,12 +74,12 @@ const MergedApp = () => {
           top: (isMobile && chatOpen) ? 5 : 'auto',
           right: 16,
           zIndex: 2,
-          bgcolor: !chatOpen ? '#36fa' : '#f36a',
+          bgcolor: !chatOpen ? '#36fa' : '#f366',
           padding: 1.5,
           textTransform: 'none',
           color: '#fff',
           borderRadius: '16px',
-          '&:hover': { bgcolor: !chatOpen ? '#36f' : '#f36' }
+          '&:hover': { bgcolor: !chatOpen ? '#36f' : '#f36a' }
         }}
         aria-label="Open Chat"
       >
