@@ -13,7 +13,7 @@ export const GlobalStyle = createGlobalStyle`
     --accent-color: #e74c3c;
     --background-color: #f8f9fa;
     --text-color: #2c3e50;
-    --border-color: #e9ecef;
+    --border-color:rgba(219, 220, 222, 20);
     --header-bg: linear-gradient(-60deg, 
       rgb(21, 53, 85) 0%, 
       rgb(39, 78, 110) 25%,
@@ -46,7 +46,7 @@ export const GlobalStyle = createGlobalStyle`
     --accent-color: #f87171;
     --background-color: #161616;
     --text-color: #e2e8f0;
-    --border-color:rgb(56, 61, 71);
+    --border-color: rgba(44, 44, 55, 100);
     --header-bg: linear-gradient(-56deg, 
       rgb(16, 34, 53) 0%,
       rgb(25, 49, 71) 25%, 
