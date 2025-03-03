@@ -1,12 +1,14 @@
 import React from 'react';
 import {
-  Box,
   TextField,
   Button,
   CircularProgress,
   useTheme,
 } from '@mui/material';
 import SendIcon from '@mui/icons-material/Send';
+
+// Importing styled components for ChatInput
+import { ChatInputContainer, ChatInputInnerBox } from '../styled/ChatInput.styled';
 
 export const ChatInput = ({
   isDarkMode,
@@ -19,15 +21,8 @@ export const ChatInput = ({
   const theme = useTheme();
 
   return (
-    <Box sx={{
-      p: 2,
-      borderTop: `1px solid ${isDarkMode ? 'rgba(255, 255, 255, 0.1)' : theme.palette.divider}`,
-      bgcolor: isDarkMode ? '#222222' : theme.palette.background.paper,
-    }}>
-      <Box sx={{
-        display: 'flex',
-        gap: 1
-      }}>
+    <ChatInputContainer isDarkMode={isDarkMode} theme={theme}>
+      <ChatInputInnerBox>
         <TextField
           fullWidth
           variant="outlined"
@@ -74,7 +69,7 @@ export const ChatInput = ({
             minWidth: '50px',
             height: '56px',
             boxShadow: isDarkMode ? 'none' : 2,
-            bgcolor: '#2196f3',
+            bgcolor: theme.palette.primary.main,
             '&:hover': {
               bgcolor: '#1976d2',
             }
@@ -82,7 +77,7 @@ export const ChatInput = ({
         >
           {loading ? <CircularProgress size={24} color="inherit" /> : <SendIcon />}
         </Button>
-      </Box>
-    </Box>
+      </ChatInputInnerBox>
+    </ChatInputContainer>
   );
 }; 

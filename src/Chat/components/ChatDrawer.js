@@ -1,6 +1,5 @@
 import React from 'react';
 import {
-  Drawer,
   Box,
   List,
   ListItem,
@@ -14,6 +13,11 @@ import {
 import AddIcon from '@mui/icons-material/Add';
 import DownloadIcon from '@mui/icons-material/Download';
 import { drawerWidth } from '../constants/storage';
+import { SessionControls } from './SessionControls'
+
+
+// Import styled components for ChatDrawer
+import { StyledDrawer, HeaderContainer } from '../styled/ChatDrawer.styled';
 
 export const ChatDrawer = ({
   isDarkMode,
@@ -26,50 +30,41 @@ export const ChatDrawer = ({
   startNewConversation,
   handleBackupConversations,
   formatTimestamp,
-  controls,
+  selectedAgent,
+  setSelectedAgent,
+  getCurrentAgent,
+  handleChangeApiKey,
+  toggleDarkMode,
+  theme,
 }) => {
   return (
-    <Drawer
+    <StyledDrawer
       variant={isMobile ? 'temporary' : 'persistent'}
       open={drawerOpen}
       onClose={() => setDrawerOpen(false)}
-      sx={{
-        width: drawerWidth,
-        flexShrink: 0,
-        '& .MuiDrawer-paper': {
-          width: drawerWidth,
-          boxSizing: 'border-box',
-          bgcolor: isDarkMode ? '#161616' : 'white',
-          top: { xs: 0, sm: 64 },
-          height: { xs: '100%', sm: 'calc(100% - 64px)' },
-          '& > .MuiToolbar-root': {
-            display: { sm: 'none' }
-          }
-        },
-      }}
-      PaperProps={{
-        sx: {
-          bgcolor: isDarkMode ? '#161616' : 'white',
-        }
-      }}
+      isDarkMode={isDarkMode}
+      isMobile={isMobile}
     >
-      {isMobile && <Toolbar />}
+      {isMobile && (
+        <SessionControls 
+          isDarkMode={isDarkMode}
+          isMobile={isMobile}
+          theme={theme}
+          selectedAgent={selectedAgent}
+          setSelectedAgent={setSelectedAgent}
+          getCurrentAgent={getCurrentAgent}
+          handleChangeApiKey={handleChangeApiKey}
+          toggleDarkMode={toggleDarkMode}
+        />
+      )}
       <Box sx={{ 
         overflow: 'auto',
         height: '100%',
         display: 'flex',
         flexDirection: 'column',
-        bgcolor: isDarkMode ? '#161616' : 'background.paper',
+        backgroundColor: isDarkMode ? '#161616' : 'background.paper',
       }}>
-        <Box sx={{ 
-          display: 'flex', 
-          justifyContent: 'space-between', 
-          alignItems: 'center',
-          px: 2,
-          py: 1,
-          borderBottom: 1,
-          borderColor: 'divider',
-        }}>
+        <HeaderContainer isDarkMode={isDarkMode}>
           <ListItemButton 
             onClick={startNewConversation}
             sx={{
@@ -95,7 +90,7 @@ export const ChatDrawer = ({
               <DownloadIcon />
             </IconButton>
           </Tooltip>
-        </Box>
+        </HeaderContainer>
         <List sx={{ 
           flexGrow: 1, 
           overflow: 'auto',
@@ -153,7 +148,6 @@ export const ChatDrawer = ({
           ))}
         </List>
       </Box>
-      {isMobile && controls}
-    </Drawer>
+    </StyledDrawer>
   );
 }; 

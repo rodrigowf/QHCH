@@ -1,10 +1,15 @@
 import { useState } from 'react';
-import { agentPrompts } from '../prompts';
+import { agentPrompts, availableAgents } from '../prompts';
+
 
 export const useChat = (apiKey, messages, setMessages, saveConversation, showSnackbar) => {
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
   const [selectedAgent, setSelectedAgent] = useState('specialist');
+
+  const getCurrentAgent = (selectedAgent) =>
+    availableAgents.find((agent) => agent.id === selectedAgent); 
+
 
   const handleSend = async () => {
     if (!input.trim() || !selectedAgent || !apiKey) {
@@ -78,5 +83,6 @@ export const useChat = (apiKey, messages, setMessages, saveConversation, showSna
     selectedAgent,
     setSelectedAgent,
     handleSend,
+    getCurrentAgent
   };
 }; 

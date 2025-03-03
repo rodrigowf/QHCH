@@ -224,7 +224,7 @@ const gridStyle = `
 `;
 
 export const Container = styled.div`
-  ${props => props.isTocVisible ? gridStyle : 'display: block;'}
+  ${props => props.isMobile ? 'display: block;' : gridStyle}
   width: 100%;
   max-width: 100vw;
   overflow-x: hidden;

@@ -39,7 +39,7 @@ const ContentPage = ({ isDarkMode, toggleDarkMode, isMobile }) => {
   return (
     <div className={isDarkMode ? 'dark-mode' : ''}>
       <GlobalStyle />
-      <Container isTocVisible={isTocVisible} >
+      <Container isTocVisible={isTocVisible} isMobile={isMobile}>
         <AppHeader 
           isDarkMode={isDarkMode} 
           toggleDarkMode={toggleDarkMode} 

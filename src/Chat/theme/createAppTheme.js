@@ -3,15 +3,23 @@ import { createTheme } from '@mui/material';
 export const createAppTheme = (isDarkMode) => createTheme({
   palette: {
     mode: isDarkMode ? 'dark' : 'light',
-    primary: {
-      main: isDarkMode ? '#1565c0' : '#2196f3',
-      light: isDarkMode ? '#1976d2' : '#64b5f6',
-      dark: isDarkMode ? '#0d47a1' : '#1976d2',
+    primary: isDarkMode ? {
+      main: '#76b6fd',
+      light: '#aed1ff',
+      dark: '#809de0'
+    } : {
+      main: '#4c6797',
+      light: '#3a4a5e',
+      dark: '#1f2a38'
     },
-    background: {
-      default: isDarkMode ? '#0a0a0a' : '#f5f5f5',
-      paper: isDarkMode ? '#1e1e1e' : '#ffffff',
-      darker: isDarkMode ? '#161616' : '#f0f0f0',
+    background: isDarkMode ? {
+      default: '#161616',
+      paper: '#1b1b1b',
+      darker: '#121212'
+    } : {
+      default: '#f8f9fa',
+      paper: '#ffffff',
+      darker: '#f0f0f0'
     },
     grey: {
       800: isDarkMode ? '#2d2d2d' : '#424242',

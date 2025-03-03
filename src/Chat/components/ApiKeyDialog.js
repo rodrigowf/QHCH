@@ -3,11 +3,11 @@ import {
   Dialog,
   DialogTitle,
   DialogContent,
-  DialogContentText,
   DialogActions,
-  TextField,
   Button,
 } from '@mui/material';
+// Import our styled components
+import { StyledDialogContentText, StyledTextField } from '../styled/ApiKeyDialog.styled';
 
 export const ApiKeyDialog = ({
   isDarkMode,
@@ -30,12 +30,10 @@ export const ApiKeyDialog = ({
     >
       <DialogTitle>OpenAI API Key</DialogTitle>
       <DialogContent>
-        <DialogContentText
-          sx={{ color: isDarkMode ? 'rgba(255, 255, 255, 0.7)' : 'rgba(0, 0, 0, 0.6)' }}
-        >
+        <StyledDialogContentText isDarkMode={isDarkMode}>
           Please enter your OpenAI API key to use this application. Your key will be stored locally in your browser and never sent to our servers.
-        </DialogContentText>
-        <TextField
+        </StyledDialogContentText>
+        <StyledTextField
           autoFocus
           margin="dense"
           label="API Key"
@@ -44,20 +42,6 @@ export const ApiKeyDialog = ({
           variant="outlined"
           value={tempApiKey}
           onChange={(e) => setTempApiKey(e.target.value)}
-          sx={{
-            '& .MuiOutlinedInput-root': {
-              bgcolor: isDarkMode ? 'rgba(255, 255, 255, 0.05)' : 'transparent',
-              '& fieldset': {
-                borderColor: isDarkMode ? 'rgba(255, 255, 255, 0.2)' : 'rgba(0, 0, 0, 0.23)',
-              },
-            },
-            '& .MuiInputLabel-root': {
-              color: isDarkMode ? 'rgba(255, 255, 255, 0.7)' : 'rgba(0, 0, 0, 0.6)',
-            },
-            '& input': {
-              color: isDarkMode ? 'white' : 'inherit',
-            }
-          }}
         />
       </DialogContent>
       <DialogActions>

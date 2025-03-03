@@ -66,6 +66,8 @@ function Chat({ isDarkMode, toggleDarkMode, isMobile }) {
     loading,
     selectedAgent,
     setSelectedAgent,
+    availableAgents,
+    getCurrentAgent,
     handleSend,
   } = useChat(apiKey, messages, setMessages, saveConversation, showSnackbar);
 
@@ -114,6 +116,7 @@ function Chat({ isDarkMode, toggleDarkMode, isMobile }) {
           drawerOpen={drawerOpen}
           setDrawerOpen={setDrawerOpen}
           selectedAgent={selectedAgent}
+          getCurrentAgent={getCurrentAgent}
           setSelectedAgent={setSelectedAgent}
           handleChangeApiKey={handleChangeApiKey}
           isThinking={loading}
@@ -138,6 +141,12 @@ function Chat({ isDarkMode, toggleDarkMode, isMobile }) {
             startNewConversation={handleStartNewConversation}
             handleBackupConversations={handleBackupClick}
             formatTimestamp={formatTimestamp}
+            selectedAgent={selectedAgent}
+            setSelectedAgent={setSelectedAgent}
+            getCurrentAgent={getCurrentAgent}
+            handleChangeApiKey={handleChangeApiKey}
+            toggleDarkMode={toggleDarkMode}
+            theme={theme}
           />
 
           <Container maxWidth="md" sx={{ 

@@ -19,6 +19,8 @@ import Brightness4Icon from '@mui/icons-material/Brightness4';
 import Brightness7Icon from '@mui/icons-material/Brightness7';
 import { availableAgents } from '../prompts';
 import { styled } from '@mui/material/styles';
+import { ControlsContainer, StyledFormControl } from '../styled/AppHeader.styled';
+import { SessionControls } from './SessionControls'
 
 // Add the keyframes and styled AppBar
 const StyledAppBar = styled(AppBar)`
@@ -67,79 +69,12 @@ export const AppHeader = ({
   drawerOpen,
   setDrawerOpen,
   selectedAgent,
+  getCurrentAgent,
   setSelectedAgent,
   handleChangeApiKey,
   isThinking
 }) => {
   const theme = useTheme();
-
-  const controls = (
-    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-      <FormControl variant="outlined" size="small" sx={{ 
-        marginBottom: isMobile ? 2 : 0,
-        minWidth: 190, 
-        '& .MuiOutlinedInput-root': {
-          bgcolor: isDarkMode ? '#2d2d2d' : theme.palette.background.paper,
-          borderRadius: 1,
-          '& fieldset': { borderColor: 'transparent' },
-          '&:hover fieldset': { borderColor: 'rgba(255, 255, 255, 0.2)' },
-          '&.Mui-focused fieldset': { borderColor: 'rgba(255, 255, 255, 0.5)' }
-        },
-        '& .MuiSelect-select, & .MuiInputLabel-root': {
-          color: isDarkMode ? '#fff' : theme.palette.text.primary
-        },
-        '& .MuiInputLabel-shrink': {
-          transform: 'translate(14px, -6px) scale(0.75)'
-        }
-      }}>
-        <InputLabel sx={{ 
-          '&.MuiInputLabel-shrink': {
-            background: isDarkMode ? '#2d2d2d' : '#efefef',
-            borderRadius: '3px',
-            paddingX: '4px'
-          }
-        }}>Select Agent</InputLabel>
-        <Select
-          value={selectedAgent}
-          onChange={(e) => setSelectedAgent(e.target.value)}
-          label="Select Agent"
-          MenuProps={{
-            PaperProps: {
-              sx: {
-                bgcolor: isDarkMode ? '#2d2d2d' : theme.palette.background.paper,
-                '& .MuiMenuItem-root': {
-                  color: isDarkMode ? '#fff' : theme.palette.text.primary,
-                }
-              }
-            }
-          }}
-        >
-          {availableAgents.map(agent => (
-            <MenuItem key={agent.id} value={agent.id}>
-              {agent.name}
-            </MenuItem>
-          ))}
-        </Select>
-      </FormControl>
-      {getCurrentAgent(selectedAgent) && (
-        <Tooltip title={getCurrentAgent(selectedAgent).description}>
-          <IconButton color="inherit">
-            <InfoIcon />
-          </IconButton>
-        </Tooltip>
-      )}
-      <Tooltip title="Change API Key">
-        <IconButton color="inherit" onClick={handleChangeApiKey}>
-          <KeyIcon />
-        </IconButton>
-      </Tooltip>
-      <Tooltip title={isDarkMode ? "Switch to Light Mode" : "Switch to Dark Mode"}>
-        <IconButton color="inherit" onClick={toggleDarkMode}>
-          {isDarkMode ? <Brightness7Icon /> : <Brightness4Icon />}
-        </IconButton>
-      </Tooltip>
-    </Box>
-  );
 
   return (
     <StyledAppBar
@@ -170,11 +105,20 @@ export const AppHeader = ({
             QHCH Chat
           </Typography>
         </Box>
-        {!isMobile && controls}
+        {!isMobile && 
+          <SessionControls 
+            isDarkMode={isDarkMode}
+            isMobile={isMobile}
+            theme={theme}
+            selectedAgent={selectedAgent}
+            setSelectedAgent={setSelectedAgent}
+            availableAgents={availableAgents}
+            getCurrentAgent={getCurrentAgent}
+            handleChangeApiKey={handleChangeApiKey}
+            toggleDarkMode={toggleDarkMode}
+          />
+        }
       </Toolbar>
     </StyledAppBar>
   );
 };
-
-const getCurrentAgent = (selectedAgent) =>
-  availableAgents.find((agent) => agent.id === selectedAgent); 
