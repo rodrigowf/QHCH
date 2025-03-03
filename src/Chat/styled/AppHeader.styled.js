@@ -22,6 +22,7 @@ export const StyledAppBar = styled(AppBar)`
       #2A3645 75%,
       #1E2328 100%
     );
+    background: linear-gradient(281deg, #17192e 0%, #16322f 25%, #1d3857 50%, #2a3145 75%, #141c25 100%);
     &.animate {
       background-size: 300% 300%;
       animation: gradient 25s linear infinite;

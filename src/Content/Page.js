@@ -1,5 +1,5 @@
 import React, { useRef, useEffect, useState } from 'react';
-import { GlobalStyle, Container, Main, Loading } from './components/styled.components';
+import { GlobalStyle, Container, Main, Loading } from './styled.components';
 import renderMathInElement from 'katex/dist/contrib/auto-render';
 import 'katex/dist/katex.min.css';
 import '@fontsource/material-icons';

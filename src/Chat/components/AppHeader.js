@@ -36,16 +36,14 @@ rgb(58, 91, 118) 75%,
     background-size: 300% 300%;
     animation: gradient 25s linear infinite;
   }
+  
+  &.fast {
+    animation: gradient 10s linear infinite;
+  }
 
   &.dark-mode {
-    background: linear-gradient(-55deg, 
-      #262B30 0%, 
-      #364A62 25%,
-      #36567B 50%,
-      #2A3645 75%,
-      #1E2328 100%
-    );
-
+    background: linear-gradient(-55deg, #0a0d15 0%, #1d312eeb 25%, #172f4bc7 50%, #232443b5 75%, #06090b 100%);
+    
     &.animate {
       background-size: 300% 300%;
       animation: gradient 25s linear infinite;
@@ -78,7 +76,7 @@ export const AppHeader = ({
 
   return (
     <StyledAppBar
-      className={`chatAppBar ${isDarkMode ? 'dark-mode' : ''} ${isThinking ? 'animate' : ''}`}
+      className={`chatAppBar ${isDarkMode ? 'dark-mode' : ''} animate ${isThinking ? 'fast' : ''}`}
       position="fixed"
       sx={{
         boxShadow: isDarkMode ? 'none' : 3,

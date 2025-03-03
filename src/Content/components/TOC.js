@@ -1,5 +1,5 @@
 import React from 'react';
-import { Nav, TOCTitle, TOCList, TOCItem, TOCLink } from './styled.components';
+import { Nav, TOCTitle, TOCList, TOCItem, TOCLink } from '../styled.components';
 
 const TOC = ({ toc }) => {
   return (

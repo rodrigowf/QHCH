@@ -1,5 +1,5 @@
 import React from 'react';
-import { Footer } from './styled.components';
+import { Footer } from '../styled.components';
 
 const AppFooter = () => {
   return (

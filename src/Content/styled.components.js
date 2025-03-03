@@ -47,13 +47,8 @@ export const GlobalStyle = createGlobalStyle`
     --background-color: #161616;
     --text-color: #e2e8f0;
     --border-color: rgba(44, 44, 55, 100);
-    --header-bg: linear-gradient(-56deg, 
-      rgb(16, 34, 53) 0%,
-      rgb(25, 49, 71) 25%, 
-      rgb(34, 67, 92) 50%,
-      rgb(19, 39, 59) 75%,
-      rgb(16, 34, 53) 100%
-    );
+    --header-bg: linear-gradient(-55deg, #0a0d15 0%, #1d312eeb 25%, #172f4bc7 50%, #232443b5 75%, #06090b 100%);
+
     --footer-bg:rgb(37, 79, 108);
     --code-bg: #282c3444;
     --blockquote-bg: #212121;

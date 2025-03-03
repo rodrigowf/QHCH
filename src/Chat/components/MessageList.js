@@ -89,7 +89,12 @@ export const MessageList = ({ messages, isDarkMode }) => {
   }, [messages]);
 
   return (
-    <StyledList>
+    <StyledList sx={{
+      flexGrow: 1,
+      overflowY: 'auto',
+      height: '100%',
+      paddingBottom: '80px',
+    }}>
       {messages.map((msg, index) => (
         <ListItem
           key={index}

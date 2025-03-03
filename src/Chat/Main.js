@@ -129,6 +129,8 @@ function Chat({ isDarkMode, toggleDarkMode, isMobile }) {
           position: 'fixed',
           top: '65px',
           width: '100vw',
+          height: 'calc(100% - 65px)',
+          overflow: 'hidden',
         }}>
           <ChatDrawer
             isDarkMode={isDarkMode}
@@ -155,8 +157,9 @@ function Chat({ isDarkMode, toggleDarkMode, isMobile }) {
             flexDirection: 'column',
             py: 3,
             gap: 2,
-            height: `calc(100vh - 65px)`,
+            height: '100%',
             bgcolor: isDarkMode ? '#161616' : 'transparent',
+            overflow: 'hidden',
             ...(isMobile && {
               padding: '12px',
               maxWidth: '100% !important',
