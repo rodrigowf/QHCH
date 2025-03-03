@@ -14,14 +14,22 @@ export const GlobalStyle = createGlobalStyle`
     --background-color: #f8f9fa;
     --text-color: #2c3e50;
     --border-color: #e9ecef;
-    /* Note: We chose the header background from global.css */
-    --header-bg: linear-gradient(135deg, #29435d 0%, #3498db 100%);
-    --code-bg: #f5f7f9;
+    --header-bg: linear-gradient(-60deg, 
+      rgb(21, 53, 85) 0%, 
+      rgb(39, 78, 110) 25%,
+      rgb(75, 120, 150) 50%,
+      rgb(22, 59, 88) 75%,
+      rgb(21, 53, 85) 100%
+    );
+    --header-gradient-animation: gradient 8s ease infinite;
+    --gradient-size: 300% 300%;
+    --footer-bg: #3498db;
+    --code-bg: #f5f7f9bb;
     --blockquote-bg: #f8f9fa;
     --toc-hover-bg: #f8f9fa;
     --toc-bg: #ffffff;
     --main-bg: #ffffff;
-    --shadow-sm: 0 2px 4px rgba(0,0,0,0.1);
+    --shadow-sm: 0 2px 4px rgba(0,0,0,0.07);
     --shadow-md: 0 4px 6px rgba(0,0,0,0.1);
     --shadow-lg: 0 10px 15px rgba(0,0,0,0.1);
     --transition-speed: 0.3s;
@@ -34,20 +42,67 @@ export const GlobalStyle = createGlobalStyle`
   /* Dark mode variables */
   .dark-mode {
     --primary-color: #93c5fd;
-    --secondary-color: #38bdf8;
+    --secondary-color:rgb(91, 174, 209);
     --accent-color: #f87171;
     --background-color: #161616;
     --text-color: #e2e8f0;
-    --border-color: #2d3748;
-    --header-bg: linear-gradient(135deg, #1d2127 0%, #195ba7 100%);
-    --code-bg: #282c34;
+    --border-color:rgb(56, 61, 71);
+    --header-bg: linear-gradient(-56deg, 
+      rgb(16, 34, 53) 0%,
+      rgb(25, 49, 71) 25%, 
+      rgb(34, 67, 92) 50%,
+      rgb(19, 39, 59) 75%,
+      rgb(16, 34, 53) 100%
+    );
+    --footer-bg:rgb(37, 79, 108);
+    --code-bg: #282c3444;
     --blockquote-bg: #212121;
     --toc-hover-bg: #2d3748;
-    --toc-bg: #161616;
-    --main-bg: #161616;
-    --shadow-sm: 0 2px 4px rgba(0,0,0,0.5);
-    --shadow-md: 0 4px 6px rgba(0,0,0,0.5);
-    --shadow-lg: 0 10px 15px rgba(0,0,0,0.5);
+    --toc-bg: #181818;
+    --main-bg: #1b1b1b;
+    --shadow-sm: 0 2px 4px rgba(0,0,0,0.25);
+    --shadow-md: 0 4px 6px rgba(0,0,0,0.3);
+    --shadow-lg: 0 10px 15px rgba(0,0,0,0.3);
+
+    /* Add KaTeX specific dark mode overrides */
+    .katex {
+      color: var(--text-color);
+    }
+    
+    .katex-display {
+      color: var(--text-color);
+      background: var(--code-bg);
+      padding: 1rem;
+      border-radius: 8px;
+      margin: 1.5rem 0;
+      overflow-x: auto;
+      box-shadow: var(--shadow-sm);
+    }
+
+    /* Style inline math in dark mode */
+    .katex-inline {
+      color: var(--text-color);
+      background: var(--code-bg);
+      padding: 0.2rem 0.4rem;
+      border-radius: 4px;
+    }
+  }
+
+  /* Add base KaTeX styling */
+  .katex-display {
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding: 1rem;
+    margin: 1.5rem 0;
+    background: var(--code-bg);
+    border-radius: 8px;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .katex-inline {
+    padding: 0.2rem 0.4rem;
+    background: var(--code-bg);
+    border-radius: 4px;
   }
 
   /* Base resets */
@@ -91,18 +146,12 @@ export const GlobalStyle = createGlobalStyle`
     scrollbar-color: #2d3748 #161616;
     background-color: #161616;
   }
-  .dark-mode header,
-  .dark-mode #main-header {
-    background: var(--header-bg);
-    color: white;
-  }
   .dark-mode main {
     background: var(--main-bg);
     color: var(--text-color);
   }
   .dark-mode main h1 {
     color: var(--text-color);
-    border-bottom-color: var(--border-color);
   }
   .dark-mode main h2 {
     color: var(--secondary-color);
@@ -148,11 +197,21 @@ export const GlobalStyle = createGlobalStyle`
   .dark-mode #chat-root {
     background-color: #161616;
   }
+
+  /* Update gradient animation keyframes */
+  @keyframes gradient {
+    0% {
+      background-position: 300% 50%;
+    }
+    100% {
+      background-position: 0% 50%;
+    }
+  }
 `;
 
 /* Styled component definitions */
 
-export const Container = styled.div`
+const gridStyle = `
   display: grid;
   grid-template-columns: var(--toc-width) minmax(0, 1fr);
   grid-template-rows: auto 1fr auto;
@@ -162,6 +221,10 @@ export const Container = styled.div`
     "nav main"
     "footer footer";
   gap: 2rem;
+`;
+
+export const Container = styled.div`
+  ${props => props.isTocVisible ? gridStyle : 'display: block;'}
   width: 100%;
   max-width: 100vw;
   overflow-x: hidden;
@@ -170,6 +233,8 @@ export const Container = styled.div`
 export const Header = styled.header`
   grid-area: header;
   background: var(--header-bg);
+  background-size: var(--gradient-size);
+  animation: gradient 25s linear infinite;
   color: white;
   padding: 3rem 2rem;
   text-align: center;
@@ -272,7 +337,7 @@ export const Main = styled.main`
   background: var(--main-bg);
   max-width: var(--content-width);
   width: 100%;
-  box-shadow: var(--shadow-sm);
+  box-shadow: var(--shadow-md);
   border-radius: 8px;
   min-width: 0;
   overflow-wrap: break-word;
@@ -282,14 +347,15 @@ export const Main = styled.main`
 
   h1, h2, h3, h4 {
     color: var(--text-color);
-    margin: 2rem 0 1rem;
+    margin: 0;
+    padding: 1.5rem 0 1rem;
     font-weight: 700;
     line-height: 1.3;
   }
   h1 { 
     font-size: 2.5rem; 
     border-bottom: 2px solid var(--text-color);
-    padding-bottom: 0.5rem;
+    padding-bottom: 1.3rem;
     margin-top: 0;
   }
   em {
@@ -307,12 +373,16 @@ export const Main = styled.main`
     font-size: 1.2rem;
   }
   p {
-    margin-bottom: 1.5rem;
+    margin: 1.5rem 0;
     line-height: 1.8;
     font-size: 1.1rem;
   }
+  hr {
+    margin: 42px 0;
+    opacity: 0.35;
+  }
   ul, ol {
-    margin: 1.5rem 0;
+    margin: 1rem 0;
     padding-left: 2rem;
   }
   li {
@@ -356,7 +426,7 @@ export const Footer = styled.footer`
   grid-area: footer;
   text-align: center;
   padding: 2rem;
-  background: var(--primary-color);
+  background: var(--footer-bg);
   color: white;
   box-shadow: var(--shadow-lg);
 `;

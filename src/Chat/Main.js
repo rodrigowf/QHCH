@@ -3,7 +3,6 @@ import {
   Container,
   Box,
   Paper,
-  useMediaQuery,
   ThemeProvider,
   CssBaseline,
   Toolbar,
@@ -21,14 +20,13 @@ import { useConversations } from './hooks/useConversations';
 import { useChat } from './hooks/useChat';
 import { createAppTheme } from './theme/createAppTheme';
 
-function Chat({ isDarkMode, toggleDarkMode }) {
+function Chat({ isDarkMode, toggleDarkMode, isMobile }) {
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
   const [snackbarSeverity, setSnackbarSeverity] = useState('success');
   const [drawerOpen, setDrawerOpen] = useState(true);
 
   const theme = createAppTheme(isDarkMode);
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
   const showSnackbar = (message, severity = 'info') => {
     setSnackbarMessage(message);
@@ -118,14 +116,15 @@ function Chat({ isDarkMode, toggleDarkMode }) {
           selectedAgent={selectedAgent}
           setSelectedAgent={setSelectedAgent}
           handleChangeApiKey={handleChangeApiKey}
+          isThinking={loading}
         />
 
         <Box sx={{ 
           display: 'flex', 
           flexGrow: 1,
-          bgcolor: isDarkMode ? '#161616' : theme.palette.background.default,
+          bgcolor: isDarkMode ? '#161616' : 'linear-gradient(135deg, #29435d 0%, #3498db 100%)',
           position: 'fixed',
-          top: isMobile? '96px': '65px',
+          top: '65px',
           width: '100vw',
         }}>
           <ChatDrawer
@@ -147,7 +146,7 @@ function Chat({ isDarkMode, toggleDarkMode }) {
             flexDirection: 'column',
             py: 3,
             gap: 2,
-            height: `calc(100vh - ${isMobile? '96px': '65px'})`,
+            height: `calc(100vh - 65px)`,
             bgcolor: isDarkMode ? '#161616' : 'transparent',
             ...(isMobile && {
               padding: '12px',

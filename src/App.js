@@ -1,12 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { Box, IconButton, Button } from '@mui/material';
+import { Box, IconButton, Button, useMediaQuery } from '@mui/material';
 import ChatIcon from '@mui/icons-material/Chat';
 import CloseIcon from '@mui/icons-material/Close';
 import ContentPage from './Content/Page';
 import Chat from './Chat/Main';
-// import './styles/global.css';
-import './styles/responsive.css';
-import './styles/scroll.css';
 
 const DARK_MODE_STORAGE_KEY = 'qhch_dark_mode';
 
@@ -14,6 +11,7 @@ const DARK_MODE_STORAGE_KEY = 'qhch_dark_mode';
 const MergedApp = () => {
   const [chatOpen, setChatOpen] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(false);
+  const isMobile = useMediaQuery('(max-width:600px)');
 
   useEffect(() => {
     const storedDarkMode = localStorage.getItem(DARK_MODE_STORAGE_KEY);
@@ -37,9 +35,9 @@ const MergedApp = () => {
   };
 
   return (
-    <Box className={isDarkMode ? 'dark-mode' : ''} sx={{ position: 'relative' }}>
+    <Box sx={{ position: 'relative' }}>
       {!chatOpen ? (
-        <ContentPage isDarkMode={isDarkMode} toggleDarkMode={toggleDarkMode}/>
+        <ContentPage isDarkMode={isDarkMode} toggleDarkMode={toggleDarkMode} isMobile={isMobile}/>
       ) : (
         <Box
           sx={{
@@ -62,7 +60,7 @@ const MergedApp = () => {
           </Box>
           {/* Chat App Component */}
           <Box sx={{ flexGrow: 1, overflow: 'hidden' }}>
-            <Chat isDarkMode={isDarkMode} toggleDarkMode={toggleDarkMode}/>
+            <Chat isDarkMode={isDarkMode} toggleDarkMode={toggleDarkMode} isMobile={isMobile}/>
           </Box>
 
           </Box>
@@ -72,19 +70,20 @@ const MergedApp = () => {
         onClick={toggleChat}
         sx={{
           position: 'fixed',
-          bottom: 16,
+          bottom: (isMobile && chatOpen) ? 'auto' : 16,
+          top: (isMobile && chatOpen) ? 5 : 'auto',
           right: 16,
           zIndex: 2,
-          bgcolor: !chatOpen ? '#57f' : '#f57',
+          bgcolor: !chatOpen ? '#36fa' : '#f36a',
           padding: 1.5,
           textTransform: 'none',
           color: '#fff',
           borderRadius: '16px',
-          '&:hover': { bgcolor: !chatOpen ? '#35d' : '#d35' }
+          '&:hover': { bgcolor: !chatOpen ? '#36f' : '#f36' }
         }}
         aria-label="Open Chat"
       >
-        {!chatOpen ? <><ChatIcon />&nbsp; Chat with QHCH</> : <><CloseIcon />&nbsp; Close Chat</>}
+        {!chatOpen ? <><ChatIcon sx={{mx: 1}}/>{!isMobile ? " Chat with QHCH" : ""}</> : <><CloseIcon sx={{mx: 1}}/>{!isMobile ? " Close Chat" : ""}</>}
       </Button>
     </Box>
   );

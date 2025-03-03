@@ -10,17 +10,18 @@ const generateTOC = (markdown) => {
   let i = 0;
   while ((match = headingRegex.exec(markdown)) !== null) {
     const level = match[1].length;
-    const text = match[2].trim();
-    const id = text.toLowerCase().replace(/[^\w]+/g, '-');
-    const cleanText = text.replace(/[#*]/g, '');
-    if (i > 1) toc.push({ level: level - 1, text: cleanText, id });
+    const text = match[2].trim().replace(/\*\*(.*?)\*\*/g, '$1');
+    if (i > 0) {
+      const id = `title-${i - 1}`;
+      toc.push({ level: level - 1, text, id });
+    }
     i++;
   }
   return toc;
 };
 
 // Configure marked options
-marked.use({
+const markedOptions = {
   mangle: false,
   headerIds: true,
   headerPrefix: '',
@@ -28,7 +29,25 @@ marked.use({
   breaks: true,
   smartLists: true,
   smartypants: true
-});
+};
+
+marked.setOptions(markedOptions);
+
+const processHtmlIds = (html) => {
+  const parser = new DOMParser();
+  const doc = parser.parseFromString(html, 'text/html');
+  const headers = doc.querySelectorAll('h1, h2, h3, h4, h5, h6');
+  
+  headers.forEach((header, index) => {
+    // Skip the first two headers (i > 1 like in TOC)
+    if (index > 1) {
+      const id = `title-${index - 1}`;
+      header.id = id;
+    }
+  });
+
+  return doc.body.innerHTML;
+};
 
 const useMarkdown = () => {
   const [markdownContent, setMarkdownContent] = useState("");
@@ -47,8 +66,9 @@ const useMarkdown = () => {
         const md = await response.text();
         setMarkdownContent(md);
         setTOC(generateTOC(md));
-        const rendered = marked.parse(md);
-        setHtmlContent(rendered);
+        const rendered = marked.parse(md, markedOptions);
+        const processedHtml = processHtmlIds(rendered);
+        setHtmlContent(processedHtml);
         setLoading(false);
       } catch (error) {
         console.error(error);

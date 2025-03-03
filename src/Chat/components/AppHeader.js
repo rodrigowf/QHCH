@@ -18,6 +18,47 @@ import KeyIcon from '@mui/icons-material/Key';
 import Brightness4Icon from '@mui/icons-material/Brightness4';
 import Brightness7Icon from '@mui/icons-material/Brightness7';
 import { availableAgents } from '../prompts';
+import { styled } from '@mui/material/styles';
+
+// Add the keyframes and styled AppBar
+const StyledAppBar = styled(AppBar)`
+  background: linear-gradient(-55deg, 
+rgb(37, 69, 102) 0%, 
+rgb(68, 107, 139) 25%,
+rgb(85, 138, 174) 50%,
+rgb(58, 91, 118) 75%,
+    #143556 100%
+  );
+
+  &.animate {
+    background-size: 300% 300%;
+    animation: gradient 25s linear infinite;
+  }
+
+  &.dark-mode {
+    background: linear-gradient(-55deg, 
+      #262B30 0%, 
+      #364A62 25%,
+      #36567B 50%,
+      #2A3645 75%,
+      #1E2328 100%
+    );
+
+    &.animate {
+      background-size: 300% 300%;
+      animation: gradient 25s linear infinite;
+    }
+  }
+
+  @keyframes gradient {
+    0% {
+      background-position: 300% 50%;
+    }
+    100% {
+      background-position: 0% 50%;
+    }
+  }
+`;
 
 export const AppHeader = ({
   isDarkMode,
@@ -28,6 +69,7 @@ export const AppHeader = ({
   selectedAgent,
   setSelectedAgent,
   handleChangeApiKey,
+  isThinking
 }) => {
   const theme = useTheme();
 
@@ -39,35 +81,21 @@ export const AppHeader = ({
         '& .MuiOutlinedInput-root': {
           bgcolor: isDarkMode ? '#2d2d2d' : theme.palette.background.paper,
           borderRadius: 1,
-          '& fieldset': {
-            borderColor: 'transparent',
-          },
-          '&:hover fieldset': {
-            borderColor: 'rgba(255, 255, 255, 0.2)',
-          },
-          '&.Mui-focused fieldset': {
-            borderColor: 'rgba(255, 255, 255, 0.5)',
-          }
+          '& fieldset': { borderColor: 'transparent' },
+          '&:hover fieldset': { borderColor: 'rgba(255, 255, 255, 0.2)' },
+          '&.Mui-focused fieldset': { borderColor: 'rgba(255, 255, 255, 0.5)' }
         },
-        '& .MuiSelect-select': {
-          color: isDarkMode ? '#fff' : theme.palette.text.primary,
-        },
-        '& .MuiInputLabel-root': {
-          color: isDarkMode ? '#fff' : theme.palette.text.primary,
-          '&.Mui-focused': {
-            color: isDarkMode ? '#fff' : theme.palette.text.primary,
-          }
+        '& .MuiSelect-select, & .MuiInputLabel-root': {
+          color: isDarkMode ? '#fff' : theme.palette.text.primary
         },
         '& .MuiInputLabel-shrink': {
-          transform: 'translate(14px, -6px) scale(0.75)',
-          '&:not(.Mui-focused)': {
-            color: isDarkMode ? '#fff' : theme.palette.text.primary,
-          }
+          transform: 'translate(14px, -6px) scale(0.75)'
         }
       }}>
         <InputLabel sx={{ 
           '&.MuiInputLabel-shrink': {
-            background: isDarkMode ? '#2d2d2d' : theme.palette.primary.main,
+            background: isDarkMode ? '#2d2d2d' : '#efefef',
+            borderRadius: '3px',
             paddingX: '4px'
           }
         }}>Select Agent</InputLabel>
@@ -114,13 +142,12 @@ export const AppHeader = ({
   );
 
   return (
-    <AppBar 
-      className='chatAppBar'
-      position="fixed" 
-      sx={{ 
-        bgcolor: isDarkMode ? '#0d47a1' : theme.palette.primary.main,
+    <StyledAppBar
+      className={`chatAppBar ${isDarkMode ? 'dark-mode' : ''} ${isThinking ? 'animate' : ''}`}
+      position="fixed"
+      sx={{
         boxShadow: isDarkMode ? 'none' : 3,
-        zIndex: (theme) => theme.zIndex.drawer + 1
+        zIndex: theme.zIndex.drawer + 1,
       }}
     >
       <Toolbar sx={{ display: 'flex', justifyContent: 'space-between' }}>
@@ -132,20 +159,22 @@ export const AppHeader = ({
           >
             <MenuIcon />
           </IconButton>
-          <Typography variant="h5" sx={{ 
-            fontWeight: 500,
-            letterSpacing: '0.5px',
-            textShadow: '1px 1px 2px rgba(0,0,0,0.1)'
-          }}>
+          <Typography
+            variant="h5"
+            sx={{
+              fontWeight: 500,
+              letterSpacing: '0.5px',
+              textShadow: '1px 1px 2px rgba(0,0,0,0.1)',
+            }}
+          >
             QHCH Chat
           </Typography>
         </Box>
         {!isMobile && controls}
       </Toolbar>
-    </AppBar>
+    </StyledAppBar>
   );
 };
 
-const getCurrentAgent = (selectedAgent) => {
-  return availableAgents.find(agent => agent.id === selectedAgent);
-}; 
+const getCurrentAgent = (selectedAgent) =>
+  availableAgents.find((agent) => agent.id === selectedAgent); 

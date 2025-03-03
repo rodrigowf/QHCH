@@ -11,10 +11,18 @@ const AppHeader = ({ isDarkMode, toggleDarkMode }) => {
         <Title>Quantum Holographic Consciousness Hypothesis</Title>
         <Subtitle>A Unified Framework for Consciousness and Reality</Subtitle>
         <Links>
-          <a href="https://github.com/rodrigowf/QHCH" target="_blank" rel="noopener noreferrer">GitHub Repository</a> |
-          <a href="https://github.com/rodrigowf/QHCH/blob/main/QHCH.md" target="_blank" rel="noopener noreferrer">View Raw Markdown</a>
+          <a href="https://github.com/rodrigowf/QHPH" target="_blank" rel="noopener noreferrer">GitHub Repository</a> |
+          <a href="https://github.com/rodrigowf/QHPH/blob/main/QHPH.md" target="_blank" rel="noopener noreferrer">View Raw Content</a>
         </Links>
       </div>
+      <Tooltip
+        title={isDarkMode ? "Show ToC" : "Hide ToC"}
+        sx={{ position: 'absolute', right: 26 }}
+      >
+        <IconButton color="inherit" onClick={toggleDarkMode}>
+          {isDarkMode ? <Brightness7Icon /> : <Brightness4Icon />}
+        </IconButton>
+      </Tooltip>
       <Tooltip
         title={isDarkMode ? "Switch to Light Mode" : "Switch to Dark Mode"}
         sx={{ position: 'absolute', right: 26 }}
@@ -24,7 +32,7 @@ const AppHeader = ({ isDarkMode, toggleDarkMode }) => {
         </IconButton>
       </Tooltip>
     </Header>
-  );
+  );  
 };
 
 export default AppHeader; 
