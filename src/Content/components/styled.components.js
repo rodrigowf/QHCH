@@ -1,6 +1,11 @@
 import styled, { createGlobalStyle } from 'styled-components';
 
-// Global styles converted from styles.css
+/* 
+  Consolidated GlobalStyle combines:
+    • Global CSS variables (light and dark mode)
+    • Base resets and scrollbar styling
+    • Dark mode overrides for global elements
+*/
 export const GlobalStyle = createGlobalStyle`
   :root {
     --primary-color: #2c3e50;
@@ -9,7 +14,8 @@ export const GlobalStyle = createGlobalStyle`
     --background-color: #f8f9fa;
     --text-color: #2c3e50;
     --border-color: #e9ecef;
-    --header-bg: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+    /* Note: We chose the header background from global.css */
+    --header-bg: linear-gradient(135deg, #29435d 0%, #3498db 100%);
     --code-bg: #f5f7f9;
     --blockquote-bg: #f8f9fa;
     --toc-hover-bg: #f8f9fa;
@@ -20,34 +26,40 @@ export const GlobalStyle = createGlobalStyle`
     --shadow-lg: 0 10px 15px rgba(0,0,0,0.1);
     --transition-speed: 0.3s;
     --toc-width: 300px;
-    --content-width: 1200px;
+    --content-width: 1000px;
     --mobile-width: 900px;
     --text-shadow: 0 3px 6px rgba(0,0,0,0.3);
   }
 
-
   /* Dark mode variables */
   .dark-mode {
-      --primary-color: #93c5fd;
-      --secondary-color: #38bdf8;
-      --accent-color: #f87171;
-      --background-color: #161616;
-      --text-color: #e2e8f0;
-      --border-color: #2d3748;
-      --header-bg: linear-gradient(135deg, #313a47 0%, #195ba7 100%);
-      --code-bg: #282c34;
-      --blockquote-bg: #212121;
-      --toc-hover-bg: #2d3748;
-      --toc-bg: #161616;
-      --main-bg: #161616;
-      --shadow-sm: 0 2px 4px rgba(0,0,0,0.5);
-      --shadow-md: 0 4px 6px rgba(0,0,0,0.5);
-      --shadow-lg: 0 10px 15px rgba(0,0,0,0.5);
+    --primary-color: #93c5fd;
+    --secondary-color: #38bdf8;
+    --accent-color: #f87171;
+    --background-color: #161616;
+    --text-color: #e2e8f0;
+    --border-color: #2d3748;
+    --header-bg: linear-gradient(135deg, #1d2127 0%, #195ba7 100%);
+    --code-bg: #282c34;
+    --blockquote-bg: #212121;
+    --toc-hover-bg: #2d3748;
+    --toc-bg: #161616;
+    --main-bg: #161616;
+    --shadow-sm: 0 2px 4px rgba(0,0,0,0.5);
+    --shadow-md: 0 4px 6px rgba(0,0,0,0.5);
+    --shadow-lg: 0 10px 15px rgba(0,0,0,0.5);
   }
 
   /* Base resets */
-  *, *::before, *::after { box-sizing: border-box; }
-  html, body { margin: 0; padding: 0; width: 100vw; overflow-x: hidden; }
+  *, *::before, *::after {
+    box-sizing: border-box;
+  }
+  html, body {
+    margin: 0;
+    padding: 0;
+    width: 100vw;
+    overflow-x: hidden;
+  }
   body {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
     line-height: 1.6;
@@ -58,13 +70,88 @@ export const GlobalStyle = createGlobalStyle`
   }
 
   /* Scrollbar styling */
-  ::-webkit-scrollbar { width: 8px; height: 8px; }
-  ::-webkit-scrollbar-track { background: var(--background-color); border-radius: 4px; }
-  ::-webkit-scrollbar-thumb { background-color: var(--secondary-color); border-radius: 4px; }
-  ::-webkit-scrollbar-thumb:hover { background-color: var(--primary-color); }
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  ::-webkit-scrollbar-track {
+    background: var(--background-color);
+    border-radius: 4px;
+  }
+  ::-webkit-scrollbar-thumb {
+    background-color: var(--secondary-color);
+    border-radius: 4px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background-color: var(--primary-color);
+  }
+
+  /* Dark mode overrides for global elements */
+  .dark-mode {
+    scrollbar-color: #2d3748 #161616;
+    background-color: #161616;
+  }
+  .dark-mode header,
+  .dark-mode #main-header {
+    background: var(--header-bg);
+    color: white;
+  }
+  .dark-mode main {
+    background: var(--main-bg);
+    color: var(--text-color);
+  }
+  .dark-mode main h1 {
+    color: var(--text-color);
+    border-bottom-color: var(--border-color);
+  }
+  .dark-mode main h2 {
+    color: var(--secondary-color);
+  }
+  .dark-mode main h3,
+  .dark-mode main h4 {
+    color: var(--primary-color);
+  }
+  .dark-mode main p,
+  .dark-mode main li {
+    color: var(--text-color);
+  }
+  .dark-mode .toc-title {
+    color: var(--text-color);
+  }
+  .dark-mode .toc-sublist {
+    border-left-color: var(--border-color);
+  }
+  /* Chat toggle and Dark mode toggle overrides */
+  .dark-mode #chat-toggle {
+    background-color: #1565c0;
+  }
+  .dark-mode #chat-toggle:hover {
+    background-color: #0d47a1;
+  }
+  .dark-mode #chat-toggle.active {
+    background-color: #d32f2f;
+  }
+  .dark-mode #chat-toggle.active:hover {
+    background-color: #b71c1c;
+  }
+  .dark-mode #dark-mode-toggle {
+    background-color: #3f7fc9;
+  }
+  .dark-mode #dark-mode-toggle:hover {
+    background-color: #658cc6;
+    transform: translateY(-1px);
+  }
+  /* Chat root styling */
+  #chat-root {
+    background-color: white;
+  }
+  .dark-mode #chat-root {
+    background-color: #161616;
+  }
 `;
 
-// Styled components
+/* Styled component definitions */
+
 export const Container = styled.div`
   display: grid;
   grid-template-columns: var(--toc-width) minmax(0, 1fr);
@@ -122,7 +209,11 @@ export const Links = styled.p`
     border-radius: 4px;
     transition: all var(--transition-speed);
     opacity: 0.9;
-    &:hover { background: rgba(255,255,255,0.2); opacity: 1; text-decoration: underline; }
+    &:hover { 
+      background: rgba(255,255,255,0.2); 
+      opacity: 1; 
+      text-decoration: underline;
+    }
   }
 `;
 
@@ -195,46 +286,39 @@ export const Main = styled.main`
     font-weight: 700;
     line-height: 1.3;
   }
-
   h1 { 
     font-size: 2.5rem; 
     border-bottom: 2px solid var(--text-color);
     padding-bottom: 0.5rem;
     margin-top: 0;
   }
-
   em {
     color: var(--secondary-color);
   }
-
   h2 { 
     font-size: 2rem;
     color: var(--secondary-color);
   }
-
   h3 { 
     font-size: 1.5rem;
     color: var(--primary-color);
   }
-
-  h4 { font-size: 1.2rem; }
-
+  h4 { 
+    font-size: 1.2rem;
+  }
   p {
     margin-bottom: 1.5rem;
     line-height: 1.8;
     font-size: 1.1rem;
   }
-
   ul, ol {
     margin: 1.5rem 0;
     padding-left: 2rem;
   }
-
   li {
     margin: 0.75rem 0;
     line-height: 1.6;
   }
-
   code {
     background: var(--code-bg);
     padding: 0.2rem 0.4rem;
@@ -243,7 +327,6 @@ export const Main = styled.main`
     font-size: 0.9em;
     color: var(--accent-color);
   }
-
   pre {
     background: var(--code-bg);
     padding: 1.5rem;
@@ -252,13 +335,11 @@ export const Main = styled.main`
     margin: 1.5rem 0;
     box-shadow: var(--shadow-sm);
   }
-
   pre code {
     background: none;
     padding: 0;
     color: inherit;
   }
-
   blockquote {
     border-left: 4px solid var(--secondary-color);
     padding: 1.5rem;

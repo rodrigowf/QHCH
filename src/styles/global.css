@@ -16,7 +16,7 @@
     --shadow-lg: 0 10px 15px rgba(0,0,0,0.1);
     --transition-speed: 0.3s;
     --toc-width: 300px;
-    --content-width: 1200px;
+    --content-width: 1000px;
     --mobile-width: 900px;
 }
 
@@ -133,7 +133,6 @@ header {
 }
 
 .dark-mode .katex-display {
-    background-color: rgba(0, 0, 0, 0.2);
     border-radius: 4px;
 }
 

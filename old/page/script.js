@@ -1,7 +1,7 @@
-const QHPH_PATH = "https://raw.githubusercontent.com/rodrigowf/QHPH/refs/heads/main/QHPH.md";
+const QHCH_PATH = "https://raw.githubusercontent.com/rodrigowf/QHCH/refs/heads/main/QHCH.md";
 
 // Local storage keys
-const DARK_MODE_STORAGE_KEY = 'qhph_dark_mode';
+const DARK_MODE_STORAGE_KEY = 'qhch_dark_mode';
 
 
 // Function to load and set dark mode based on local storage
@@ -373,7 +373,7 @@ async function loadMarkdown() {
     console.log('Starting markdown loading process');
     try {
         const timestamp = new Date().getTime();
-        const response = await fetch(`${QHPH_PATH}?t=${timestamp}`);
+        const response = await fetch(`${QHCH_PATH}?t=${timestamp}`);
         
         if (!response.ok) {
             throw new Error(`Failed to load markdown file: ${response.status} ${response.statusText}`);

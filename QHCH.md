@@ -1,11 +1,11 @@
-# **Quantum Holographic Perception Hypothesis (QHPH)**
+# **Quantum Holographic Consciousness Hypothesis (QHCH)**
 
 ### *Formulated by Rodrigo Werneck Franco, expanded with insights from quantum mechanics, neuroscience, general relativity, and philosophy of mind.*
 
 ## **1. Fundamental Axiom: Superposition = The Physically Real Perception**
 
 1. **Superposition $\neq$ Potentialities**  
-   In QHPH, the wavefunction of a neural system (e.g., microtubules in the brain) isn't a set of un-chosen classical states. It is **one single physically real arrangement** that the system "lives" as *the direct, continuous, holographic experience.*  
+   In QHCH, the wavefunction of a neural system (e.g., microtubules in the brain) isn't a set of un-chosen classical states. It is **one single physically real arrangement** that the system "lives" as *the direct, continuous, holographic experience.*  
 2. **Continuous 'Holographic' Field**  
    This wavefunction's amplitude and phase encode everything about the perceived reality. If we expand to multiple microtubules or brain regions, they unify into **one** wavefunction describing the entire integrated field.
 
@@ -13,7 +13,7 @@
 Let $\mathcal{H}$ be the Hilbert space of the neural quantum system. A **superposition** is
 
 $$|\Psi_{\!Q}\rangle \;=\; \sum_{i} c_i \,|\psi_i\rangle,$$
-with $\sum_i |c_i|^2 = 1$. Instead of enumerating classical "options," QHPH states $\lvert \Psi_{\!Q}\rangle$ *is* the physically real, currently felt arrangement.
+with $\sum_i |c_i|^2 = 1$. Instead of enumerating classical "options," QHCH states $\lvert \Psi_{\!Q}\rangle$ *is* the physically real, currently felt arrangement.
 
 ---
 
@@ -66,7 +66,7 @@ where $H$ includes local resonances (e.g., microtubule vibrational modes), coupl
    If we add a future boundary condition $\langle \phi(T)|$, the amplitude for an event is
 
    $$\langle \phi(T)|\,|\psi(t)\rangle,$$
-   potentially explaining memory or intuitive "future" correlations. In QHPH, *the entire wave functional is still the physically real arrangement*.
+   potentially explaining memory or intuitive "future" correlations. In QHCH, *the entire wave functional is still the physically real arrangement*.
 
 ---
 
@@ -82,7 +82,7 @@ where $H$ includes local resonances (e.g., microtubule vibrational modes), coupl
    - In the brain, large-scale coherent microtubule states cross thresholds quickly, leading to **discrete conscious moments** of decision.
 
 3. **Living Superposition**  
-   QHPH sees the wavefunction as the "living" arrangement. If it crosses the OR threshold, it reconfigures. This *is* the "choice" from the inside.
+   QHCH sees the wavefunction as the "living" arrangement. If it crosses the OR threshold, it reconfigures. This *is* the "choice" from the inside.
 
 ---
 
@@ -90,12 +90,12 @@ where $H$ includes local resonances (e.g., microtubule vibrational modes), coupl
 
 1. **Local Observers vs. Universal Wavefunction**  
    - Many-worlds: The wavefunction never truly collapses, it branches.  
-   - QHPH: Each observer's vantage sees one physically real arrangement, with "collapse" as branching.  
+   - QHCH: Each observer's vantage sees one physically real arrangement, with "collapse" as branching.  
 2. **Branching Points**  
    - Every "decision" or "collapse" is a branching event from a universal perspective.  
    - But each local vantage experiences it as a real reconfiguration.
 
-Hence, QHPH can align with either objective collapse or many-worlds, with the local vantage of "collapse" intact.
+Hence, QHCH can align with either objective collapse or many-worlds, with the local vantage of "collapse" intact.
 
 ---
 
@@ -142,6 +142,6 @@ Hence, QHPH can align with either objective collapse or many-worlds, with the lo
    Memory, intuition, and possible retrocausal phenomena explained by bridging across times in a covariant or TSVF approach.  
 5. **Objective Collapse or Many-Worlds**  
    - **Objective Collapse** (like Orch-OR) offers a real, universal collapse from inside the system if thresholds are met.  
-   - **Many-Worlds** sees each "decision" as a branching. Both are consistent with QHPH from the local vantage.  
+   - **Many-Worlds** sees each "decision" as a branching. Both are consistent with QHCH from the local vantage.  
 
-Thus, the **Quantum Holographic Perception Hypothesis (QHPH)** fully integrates quantum superposition, entanglement, potential objective collapse (Orch-OR style), and time-spanning wavefunction formalisms to explain how consciousness arises as the **physically real arrangement** that a neural system literally "feels," while decisions or attentional shifts appear as discrete collapses or reconfigurations.
+Thus, the **Quantum Holographic Consciousness Hypothesis (QHCH)** fully integrates quantum superposition, entanglement, potential objective collapse (Orch-OR style), and time-spanning wavefunction formalisms to explain how consciousness arises as the **physically real arrangement** that a neural system literally "feels," while decisions or attentional shifts appear as discrete collapses or reconfigurations.
