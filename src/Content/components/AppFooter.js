@@ -4,7 +4,7 @@ import { Footer } from '../styled.components';
 const AppFooter = () => {
   return (
     <Footer>
-      <p>© 2024 Rodrigo Werneck Franco. All rights reserved.</p>
+      <p>© 2025 Rodrigo Werneck Franco. All rights reserved. MIT License.</p>
     </Footer>
   );
 };

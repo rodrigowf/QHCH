@@ -30,8 +30,8 @@ export const GlobalStyle = createGlobalStyle`
     --toc-bg: #ffffff;
     --main-bg: #ffffff;
     --shadow-sm: 0 2px 4px rgba(0,0,0,0.07);
-    --shadow-md: 0 4px 6px rgba(0,0,0,0.1);
-    --shadow-lg: 0 10px 15px rgba(0,0,0,0.1);
+    --shadow-md: 0 4px 6px rgba(0,0,0,0.2);
+    --shadow-lg: 0 6px 11px rgba(0,0,0,0.4);
     --transition-speed: 0.3s;
     --toc-width: 300px;
     --content-width: 1000px;
@@ -229,7 +229,7 @@ export const Header = styled.header`
   grid-area: header;
   background: var(--header-bg);
   background-size: var(--gradient-size);
-  animation: gradient 25s linear infinite;
+  animation: gradient 35s linear infinite;
   color: white;
   padding: 3rem 2rem;
   text-align: center;
