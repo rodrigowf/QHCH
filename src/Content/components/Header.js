@@ -12,9 +12,9 @@ const AppHeader = ({ isDarkMode, toggleDarkMode, isMobile, isTocVisible, toggleT
       <div className="header-content">
         <Title>Quantum Holographic Consciousness Hypothesis</Title>
         <Subtitle>A Unified Framework for Consciousness and Reality</Subtitle>
-        <Links>
-          <a href="https://github.com/rodrigowf/QHPH" target="_blank" rel="noopener noreferrer">GitHub Repository</a> |
-          <a href="https://github.com/rodrigowf/QHPH/blob/main/QHPH.md" target="_blank" rel="noopener noreferrer">View Raw Content</a>
+        <Links isMobile={isMobile}>
+          <a href="https://github.com/rodrigowf/QHCH" target="_blank" rel="noopener noreferrer">GitHub Repository</a> |
+          <a href="https://github.com/rodrigowf/QHCH/blob/main/QHCH.md" target="_blank" rel="noopener noreferrer">View Raw Content</a>
         </Links>
       </div>
       {isMobile && (

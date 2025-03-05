@@ -4,6 +4,8 @@ import ChatIcon from '@mui/icons-material/Chat';
 import CloseIcon from '@mui/icons-material/Close';
 import ContentPage from './Content/Page';
 import Chat from './Chat/Main';
+import LogRecorder from './LogRecorder';
+
 
 const DARK_MODE_STORAGE_KEY = 'qhch_dark_mode';
 
@@ -52,12 +54,6 @@ const MergedApp = () => {
             flexDirection: 'column'
           }}
         >
-          {/* Close Chat Button */}
-          <Box sx={{ alignSelf: 'flex-end', p: 1 }}>
-            <IconButton onClick={toggleChat} aria-label="Close Chat" sx={{ bgcolor: 'background.paper', '&:hover': { bgcolor: 'grey.300' }}}>
-              <CloseIcon />
-            </IconButton>
-          </Box>
           {/* Chat App Component */}
           <Box sx={{ flexGrow: 1, overflow: 'hidden' }}>
             <Chat isDarkMode={isDarkMode} toggleDarkMode={toggleDarkMode} isMobile={isMobile}/>
@@ -74,17 +70,19 @@ const MergedApp = () => {
           top: (isMobile && chatOpen) ? 5 : 'auto',
           right: 16,
           zIndex: 2,
-          bgcolor: !chatOpen ? '#36fa' : '#f366',
+          bgcolor: !chatOpen ? '#36fa' : isMobile ? 'transparent' : '#a146',
           padding: 1.5,
+          paddingRight: !isMobile ? 3 : 1.5,
           textTransform: 'none',
           color: '#fff',
           borderRadius: '16px',
-          '&:hover': { bgcolor: !chatOpen ? '#36f' : '#f36a' }
+          '&:hover': { bgcolor: !chatOpen ? '#36f' : '#a143' }
         }}
         aria-label="Open Chat"
       >
-        {!chatOpen ? <><ChatIcon sx={{mx: 1}}/>{!isMobile ? " Chat with QHCH" : ""}</> : <><CloseIcon sx={{mx: 1}}/>{!isMobile ? " Close Chat" : ""}</>}
+        {!chatOpen ? <><ChatIcon sx={{mx: 1}}/>{!isMobile ? " Chat with QHCH" : ""}</> : <><CloseIcon sx={{mx: 1}}/>{!isMobile ? " Close Chat " : ""}</>}
       </Button>
+      {/* <LogRecorder /> */}
     </Box>
   );
 };

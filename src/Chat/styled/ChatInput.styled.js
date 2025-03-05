@@ -8,5 +8,5 @@ export const ChatInputContainer = styled(Box)(({ theme, isDarkMode }) => ({
 
 export const ChatInputInnerBox = styled(Box)(() => ({
   display: 'flex',
-  gap: '1rem',
+  gap: '1.2rem',
 })); 

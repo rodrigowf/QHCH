@@ -34,9 +34,8 @@ rgb(58, 91, 118) 75%,
 
   &.animate {
     background-size: 300% 300%;
-    animation: gradient 25s linear infinite;
+    animation: gradient 35s linear infinite;
   }
-  
   &.fast {
     animation: gradient 10s linear infinite;
   }
@@ -46,7 +45,10 @@ rgb(58, 91, 118) 75%,
     
     &.animate {
       background-size: 300% 300%;
-      animation: gradient 25s linear infinite;
+      animation: gradient 35s linear infinite;
+    }
+    &.fast {
+      animation: gradient 10s linear infinite;
     }
   }
 
@@ -77,10 +79,11 @@ export const AppHeader = ({
   return (
     <StyledAppBar
       className={`chatAppBar ${isDarkMode ? 'dark-mode' : ''} animate ${isThinking ? 'fast' : ''}`}
-      position="fixed"
+      position="sticky"
       sx={{
-        boxShadow: isDarkMode ? 'none' : 3,
+        boxShadow: 3,
         zIndex: theme.zIndex.drawer + 1,
+        position: "sticky"
       }}
     >
       <Toolbar sx={{ display: 'flex', justifyContent: 'space-between' }}>

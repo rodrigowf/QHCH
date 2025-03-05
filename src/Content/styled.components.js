@@ -261,11 +261,11 @@ export const Subtitle = styled.p`
 
 export const Links = styled.p`
   margin-top: 1rem;
-  font-size: 1rem;
+  font-size: ${props => props.isMobile ? '0.8rem' : '1rem'};
   a {
     color: white;
     text-decoration: none;
-    padding: 0.5rem 1rem;
+    padding: 0.5rem ${props => props.isMobile ? '0.8rem' : '1rem'};
     border-radius: 4px;
     transition: all var(--transition-speed);
     opacity: 0.9;
@@ -329,8 +329,8 @@ export const TOCLink = styled.a`
 export const Main = styled.main`
   grid-area: main;
   padding: ${props => props.isMobile ? '2rem 1.4rem' : '2rem'};
-  margin: ${props => props.isMobile ? '0 0.5rem' : 'auto'};
-  width: ${props => props.isMobile ? 'calc(100% - 1rem)' : '100%'};
+  margin: ${props => props.isMobile ? '0' : 'auto'};
+  width: 100%;
   max-width: var(--content-width);
   background: var(--main-bg);
   box-shadow: var(--shadow-md);

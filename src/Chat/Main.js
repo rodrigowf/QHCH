@@ -25,6 +25,7 @@ function Chat({ isDarkMode, toggleDarkMode, isMobile }) {
   const [snackbarMessage, setSnackbarMessage] = useState('');
   const [snackbarSeverity, setSnackbarSeverity] = useState('success');
   const [drawerOpen, setDrawerOpen] = useState(true);
+  const [isSpoken, setIsSpoken] = useState(false);
 
   const theme = createAppTheme(isDarkMode);
 
@@ -66,7 +67,6 @@ function Chat({ isDarkMode, toggleDarkMode, isMobile }) {
     loading,
     selectedAgent,
     setSelectedAgent,
-    availableAgents,
     getCurrentAgent,
     handleSend,
   } = useChat(apiKey, messages, setMessages, saveConversation, showSnackbar);
@@ -127,7 +127,7 @@ function Chat({ isDarkMode, toggleDarkMode, isMobile }) {
           flexGrow: 1,
           bgcolor: isDarkMode ? '#161616' : 'linear-gradient(135deg, #29435d 0%, #3498db 100%)',
           position: 'fixed',
-          top: '65px',
+          top: isMobile ? '50px' : '65px',
           width: '100vw',
           height: 'calc(100% - 65px)',
           overflow: 'hidden',
@@ -155,13 +155,13 @@ function Chat({ isDarkMode, toggleDarkMode, isMobile }) {
             flexGrow: 1,
             display: 'flex',
             flexDirection: 'column',
-            py: 3,
+            py: isMobile ? 0 : 2,
             gap: 2,
             height: '100%',
             bgcolor: isDarkMode ? '#161616' : 'transparent',
             overflow: 'hidden',
             ...(isMobile && {
-              padding: '12px',
+              padding: 0,
               maxWidth: '100% !important',
             })
           }}>
@@ -179,6 +179,7 @@ function Chat({ isDarkMode, toggleDarkMode, isMobile }) {
               <MessageList
                 messages={messages}
                 isDarkMode={isDarkMode}
+                isSpoken={isSpoken}
               />
 
               <ChatInput
@@ -188,6 +189,8 @@ function Chat({ isDarkMode, toggleDarkMode, isMobile }) {
                 loading={loading}
                 apiKey={apiKey}
                 handleSend={handleSend}
+                isMobile={isMobile}
+                setIsSpoken={setIsSpoken}
               />
             </Paper>
           </Container>
