@@ -17,6 +17,8 @@ import InfoIcon from '@mui/icons-material/Info';
 import KeyIcon from '@mui/icons-material/Key';
 import Brightness4Icon from '@mui/icons-material/Brightness4';
 import Brightness7Icon from '@mui/icons-material/Brightness7';
+import PlayCircleFilledIcon from '@mui/icons-material/PlayCircleFilled';
+import PlayCircleOutlineIcon from '@mui/icons-material/PlayCircleOutline';
 import { availableAgents } from '../prompts';
 import { styled } from '@mui/material/styles';
 import { ControlsContainer, StyledFormControl } from '../styled/AppHeader.styled';
@@ -72,7 +74,9 @@ export const AppHeader = ({
   getCurrentAgent,
   setSelectedAgent,
   handleChangeApiKey,
-  isThinking
+  isThinking,
+  autoPlayEnabled,
+  toggleAutoPlay
 }) => {
   const theme = useTheme();
 
@@ -81,7 +85,7 @@ export const AppHeader = ({
       className={`chatAppBar ${isDarkMode ? 'dark-mode' : ''} animate ${isThinking ? 'fast' : ''}`}
       position="sticky"
       sx={{
-        boxShadow: 3,
+        boxShadow: 5,
         zIndex: theme.zIndex.drawer + 1,
         position: "sticky"
       }}
@@ -106,19 +110,29 @@ export const AppHeader = ({
             QHCH Chat
           </Typography>
         </Box>
-        {!isMobile && 
-          <SessionControls 
-            isDarkMode={isDarkMode}
-            isMobile={isMobile}
-            theme={theme}
-            selectedAgent={selectedAgent}
-            setSelectedAgent={setSelectedAgent}
-            availableAgents={availableAgents}
-            getCurrentAgent={getCurrentAgent}
-            handleChangeApiKey={handleChangeApiKey}
-            toggleDarkMode={toggleDarkMode}
-          />
-        }
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+          <Tooltip
+            sx={{mr: isMobile ? 8 : 2}} 
+            title={autoPlayEnabled ? "Disable Auto Play" : "Enable Auto Play"}
+          >
+            <IconButton color="inherit" onClick={toggleAutoPlay}>
+              {autoPlayEnabled ? <PlayCircleFilledIcon /> : <PlayCircleOutlineIcon />}
+            </IconButton>
+          </Tooltip>
+          {!isMobile && 
+            <SessionControls 
+              isDarkMode={isDarkMode}
+              isMobile={isMobile}
+              theme={theme}
+              selectedAgent={selectedAgent}
+              setSelectedAgent={setSelectedAgent}
+              availableAgents={availableAgents}
+              getCurrentAgent={getCurrentAgent}
+              handleChangeApiKey={handleChangeApiKey}
+              toggleDarkMode={toggleDarkMode}
+            />
+          }
+        </Box>
       </Toolbar>
     </StyledAppBar>
   );

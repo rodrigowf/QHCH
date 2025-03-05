@@ -5,7 +5,7 @@ import { useTheme } from '@mui/material';
 import VolumeUpIcon from '@mui/icons-material/VolumeUp';
 import PauseIcon from '@mui/icons-material/Pause';
 
-export const MessageList = ({ messages, isDarkMode }) => {
+export const MessageList = ({ messages, isDarkMode, autoPlayEnabled }) => {
   const messagesEndRef = useRef(null);
   const theme = useTheme();
   const [isSpeaking, setIsSpeaking] = useState(false);
@@ -88,6 +88,19 @@ export const MessageList = ({ messages, isDarkMode }) => {
     scrollToBottom();
   }, [messages]);
 
+  // Auto-play new assistant messages if enabled
+  const lastAutoPlayedIndex = useRef(-1);
+  useEffect(() => {
+    if (autoPlayEnabled && messages.length > 0) {
+      const lastIndex = messages.length - 1;
+      const lastMessage = messages[lastIndex];
+      if (lastMessage.role === 'assistant' && lastIndex > lastAutoPlayedIndex.current) {
+        lastAutoPlayedIndex.current = lastIndex;
+        speakMessage(lastMessage.content, lastIndex);
+      }
+    }
+  }, [messages, autoPlayEnabled]);
+
   return (
     <StyledList sx={{
       flexGrow: 1,
@@ -115,13 +128,13 @@ export const MessageList = ({ messages, isDarkMode }) => {
                 {activeSpeech && activeSpeech.messageIndex === index ? (
                   getChunks(msg.content).map((chunk, i) => (
                     <span
-                    key={i}
-                    style={{
-                      backgroundColor:
-                      activeSpeech.chunkIndex === i ? isDarkMode ? '#1a441a' : '#ffff99' : 'transparent',
-                      transition: 'background-color 0.3s ease',
-                      whiteSpace: 'pre-wrap'
-                    }}
+                      key={i}
+                      style={{
+                        backgroundColor:
+                          activeSpeech.chunkIndex === i ? isDarkMode ? '#1a441a' : '#ffff99' : 'transparent',
+                        transition: 'background-color 0.3s ease',
+                        whiteSpace: 'pre-wrap'
+                      }}
                     >
                       {chunk}
                     </span>

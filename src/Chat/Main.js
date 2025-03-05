@@ -26,6 +26,7 @@ function Chat({ isDarkMode, toggleDarkMode, isMobile }) {
   const [snackbarSeverity, setSnackbarSeverity] = useState('success');
   const [drawerOpen, setDrawerOpen] = useState(true);
   const [isSpoken, setIsSpoken] = useState(false);
+  const [autoPlayEnabled, setAutoPlayEnabled] = useState(false);
 
   const theme = createAppTheme(isDarkMode);
 
@@ -100,6 +101,10 @@ function Chat({ isDarkMode, toggleDarkMode, isMobile }) {
     handleSaveApiKey(showSnackbar);
   };
 
+  const toggleAutoPlay = () => {
+    setAutoPlayEnabled(prev => !prev);
+  };
+
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
@@ -120,6 +125,8 @@ function Chat({ isDarkMode, toggleDarkMode, isMobile }) {
           setSelectedAgent={setSelectedAgent}
           handleChangeApiKey={handleChangeApiKey}
           isThinking={loading}
+          autoPlayEnabled={autoPlayEnabled}
+          toggleAutoPlay={toggleAutoPlay}
         />
 
         <Box sx={{ 
@@ -180,6 +187,7 @@ function Chat({ isDarkMode, toggleDarkMode, isMobile }) {
                 messages={messages}
                 isDarkMode={isDarkMode}
                 isSpoken={isSpoken}
+                autoPlayEnabled={autoPlayEnabled}
               />
 
               <ChatInput
