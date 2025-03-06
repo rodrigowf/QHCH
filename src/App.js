@@ -8,6 +8,7 @@ import LogRecorder from './LogRecorder';
 
 
 const DARK_MODE_STORAGE_KEY = 'qhch_dark_mode';
+const CHAT_OPEN_STORAGE_KEY = 'qhch_chat_open';
 
 
 const MergedApp = () => {
@@ -18,6 +19,17 @@ const MergedApp = () => {
   const [chatOpen, setChatOpen] = useState(page === "chat");
   const [isDarkMode, setIsDarkMode] = useState(false);
   const isMobile = useMediaQuery('(max-width:600px)');
+
+  useEffect(() => {
+    const storedChatOpen = localStorage.getItem(CHAT_OPEN_STORAGE_KEY);
+    if (storedChatOpen !== null) {
+      setChatOpen(storedChatOpen === 'true');
+    }
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem(CHAT_OPEN_STORAGE_KEY, chatOpen.toString());
+  }, [chatOpen]);
 
   useEffect(() => {
     const storedDarkMode = localStorage.getItem(DARK_MODE_STORAGE_KEY);

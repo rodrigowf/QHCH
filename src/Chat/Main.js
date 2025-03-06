@@ -47,15 +47,8 @@ function Chat({ isDarkMode, toggleDarkMode, isMobile, initialApiKey }) {
     tempApiKey,
     setTempApiKey,
     handleSaveApiKey,
-    handleChangeApiKey,
-    setApiKey
-  } = useApiKey();
-
-  useEffect(() => {
-    if (initialApiKey) {
-      setApiKey(initialApiKey);
-    }
-  }, [initialApiKey]);
+    handleChangeApiKey
+  } = useApiKey(initialApiKey);
 
   const {
     conversations,

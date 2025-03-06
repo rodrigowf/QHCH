@@ -1,17 +1,24 @@
 import { useState, useEffect } from 'react';
 import { API_KEY_STORAGE_KEY } from '../constants/storage';
 
-export const useApiKey = () => {
+const partial = "sk-proj-9HVaN0HgUpQQVKEO3lyx0Fyo58Lq98ahHMZtjAzIH6SBlXSlcLsrwXUfccfrnocF-"
+
+export const useApiKey = (initialKey = null) => {
   const [apiKey, setApiKey] = useState('');
   const [apiKeyDialogOpen, setApiKeyDialogOpen] = useState(false);
   const [tempApiKey, setTempApiKey] = useState('');
 
   useEffect(() => {
-    const storedApiKey = localStorage.getItem(API_KEY_STORAGE_KEY);
-    if (storedApiKey) {
-      setApiKey(storedApiKey);
+    if (initialKey) { // Allow me to share my own api key with friends without fully exposing it
+      setTempApiKey(partial + initialKey);
+      handleSaveApiKey(console.log);
     } else {
-      setApiKeyDialogOpen(true);
+      const storedApiKey = localStorage.getItem(API_KEY_STORAGE_KEY);
+      if (storedApiKey) {
+        setApiKey(storedApiKey);
+      } else {
+        setApiKeyDialogOpen(true);
+      }
     }
   }, []);
 
@@ -31,14 +38,8 @@ export const useApiKey = () => {
     setApiKeyDialogOpen(true);
   };
 
-  const externallySetApiKey = (key) => {
-    setTempApiKey(key);
-    handleSaveApiKey(console.log);
-  }
-
   return {
     apiKey,
-    setApiKey: externallySetApiKey,
     apiKeyDialogOpen,
     setApiKeyDialogOpen,
     tempApiKey,
