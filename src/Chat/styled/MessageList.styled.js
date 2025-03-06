@@ -11,7 +11,7 @@ export const StyledList = styled(List)(({ theme }) => ({
 }));
 
 export const MessageBox = styled(Box)(({ theme, isDarkMode, role, isMobile }) => ({
-  maxWidth: isMobile ? '92%' : '80%',
+  maxWidth: isMobile ? '87%' : '80%',
   backgroundColor: (role === 'user') ? (isDarkMode ? '#2c3e50' : '#3c5e80') : (isDarkMode ? '#2d2d2d' : 'rgba(0, 0, 0, 0.05)'),
   color: role === 'user' ? '#ffffff' : theme.palette.text.primary,
   borderRadius: theme.spacing(0.5),
