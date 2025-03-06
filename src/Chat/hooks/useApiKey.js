@@ -31,8 +31,14 @@ export const useApiKey = () => {
     setApiKeyDialogOpen(true);
   };
 
+  const externallySetApiKey = (key) => {
+    setTempApiKey(key);
+    handleSaveApiKey(console.log);
+  }
+
   return {
     apiKey,
+    setApiKey: externallySetApiKey,
     apiKeyDialogOpen,
     setApiKeyDialogOpen,
     tempApiKey,

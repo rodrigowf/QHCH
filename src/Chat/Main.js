@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Container,
   Box,
@@ -20,7 +20,7 @@ import { useConversations } from './hooks/useConversations';
 import { useChat } from './hooks/useChat';
 import { createAppTheme } from './theme/createAppTheme';
 
-function Chat({ isDarkMode, toggleDarkMode, isMobile }) {
+function Chat({ isDarkMode, toggleDarkMode, isMobile, initialApiKey }) {
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
   const [snackbarSeverity, setSnackbarSeverity] = useState('success');
@@ -48,7 +48,14 @@ function Chat({ isDarkMode, toggleDarkMode, isMobile }) {
     setTempApiKey,
     handleSaveApiKey,
     handleChangeApiKey,
+    setApiKey
   } = useApiKey();
+
+  useEffect(() => {
+    if (initialApiKey) {
+      setApiKey(initialApiKey);
+    }
+  }, [initialApiKey]);
 
   const {
     conversations,

@@ -11,7 +11,11 @@ const DARK_MODE_STORAGE_KEY = 'qhch_dark_mode';
 
 
 const MergedApp = () => {
-  const [chatOpen, setChatOpen] = useState(false);
+  const queryParams = new URLSearchParams(window.location.search);
+  const page = queryParams.get('page');
+  const initialApiKey = queryParams.get('key');
+
+  const [chatOpen, setChatOpen] = useState(page === "chat");
   const [isDarkMode, setIsDarkMode] = useState(false);
   const isMobile = useMediaQuery('(max-width:600px)');
 
@@ -56,7 +60,7 @@ const MergedApp = () => {
         >
           {/* Chat App Component */}
           <Box sx={{ flexGrow: 1, overflow: 'hidden' }}>
-            <Chat isDarkMode={isDarkMode} toggleDarkMode={toggleDarkMode} isMobile={isMobile}/>
+            <Chat isDarkMode={isDarkMode} toggleDarkMode={toggleDarkMode} isMobile={isMobile} initialApiKey={initialApiKey}/>
           </Box>
 
           </Box>
