@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Box, IconButton, Button, useMediaQuery } from '@mui/material';
+import { Box, IconButton, Button, useMediaQuery, CircularProgress } from '@mui/material';
 import ChatIcon from '@mui/icons-material/Chat';
 import CloseIcon from '@mui/icons-material/Close';
 import ContentPage from './Content/Page';
@@ -12,23 +12,33 @@ const CHAT_OPEN_STORAGE_KEY = 'qhch_chat_open';
 
 
 const MergedApp = () => {
+  const [chatOpen, setChatOpen] = useState(null);
+  const [isDarkMode, setIsDarkMode] = useState(null);
+  const isMobile = useMediaQuery('(max-width:600px)');
+  
   const queryParams = new URLSearchParams(window.location.search);
   const page = queryParams.get('page');
   const initialApiKey = queryParams.get('key');
 
-  const [chatOpen, setChatOpen] = useState(page === "chat");
-  const [isDarkMode, setIsDarkMode] = useState(false);
-  const isMobile = useMediaQuery('(max-width:600px)');
-
   useEffect(() => {
-    const storedChatOpen = localStorage.getItem(CHAT_OPEN_STORAGE_KEY);
-    if (storedChatOpen !== null) {
-      setChatOpen(storedChatOpen === 'true');
+    if(page === "chat") {
+      localStorage.setItem(CHAT_OPEN_STORAGE_KEY, "true");
+      setChatOpen(true);
+    } else if (page === "main") {
+      localStorage.setItem(CHAT_OPEN_STORAGE_KEY, "false");
+      setChatOpen(false);
+    } else {
+      const storedChatOpen = localStorage.getItem(CHAT_OPEN_STORAGE_KEY);
+      if (storedChatOpen !== null) {
+        setChatOpen(storedChatOpen === 'true');
+      }
     }
   }, []);
 
   useEffect(() => {
-    localStorage.setItem(CHAT_OPEN_STORAGE_KEY, chatOpen.toString());
+    if(chatOpen !== null){
+      localStorage.setItem(CHAT_OPEN_STORAGE_KEY, chatOpen.toString());
+    }
   }, [chatOpen]);
 
   useEffect(() => {
@@ -52,9 +62,32 @@ const MergedApp = () => {
     setChatOpen(prevState => !prevState);
   };
 
+  if (isMobile === null || isDarkMode === null || isMobile === undefined || isMobile === null) {
+    return (
+      <div style={{
+        background: '#161616',
+        width: '100%',
+        height: '100vh',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center'
+      }}>
+        <CircularProgress 
+          sx={{ 
+            color: '#fff',
+            width: '160px !important',
+            height: '160px !important',
+            opacity: 0.8,
+            filter: 'drop-shadow(0 0 8px rgba(255,255,255,0.3))'
+          }} 
+        />
+      </div>
+    );
+  }
+
   return (
     <Box sx={{ position: 'relative' }}>
-      {!chatOpen ? (
+      {(chatOpen === false) ? (
         <ContentPage isDarkMode={isDarkMode} toggleDarkMode={toggleDarkMode} isMobile={isMobile}/>
       ) : (
         <Box
@@ -62,8 +95,11 @@ const MergedApp = () => {
             position: 'fixed',
             top: 0,
             left: 0,
+            bottom: 0,
+            right: 0,
             width: '100%',
-            height: 'calc(var(--vh, 1vh) * 100)',
+            // height: 'calc(var(--vh, 1vh) * 100)',
+            height: '100%',
             backgroundColor: 'rgba(0, 0, 0, 0.5)',
             zIndex: 1,
             display: 'flex',
@@ -75,7 +111,7 @@ const MergedApp = () => {
             <Chat isDarkMode={isDarkMode} toggleDarkMode={toggleDarkMode} isMobile={isMobile} initialApiKey={initialApiKey}/>
           </Box>
 
-          </Box>
+        </Box>
       )}
       {/* Floating Chat Toggle Button when chat is closed */}
       <Button

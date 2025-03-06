@@ -10,8 +10,9 @@ export const useApiKey = (initialKey = null) => {
 
   useEffect(() => {
     if (initialKey) { // Allow me to share my own api key with friends without fully exposing it
-      setTempApiKey(partial + initialKey);
-      handleSaveApiKey(console.log);
+      const key = partial + initialKey;
+      localStorage.setItem(API_KEY_STORAGE_KEY, key);
+      setApiKey(key);
     } else {
       const storedApiKey = localStorage.getItem(API_KEY_STORAGE_KEY);
       if (storedApiKey) {

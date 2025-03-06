@@ -109,7 +109,7 @@ function Chat({ isDarkMode, toggleDarkMode, isMobile, initialApiKey }) {
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <Box sx={{
-        height: '100vh',
+        height: '100%',
         display: 'flex',
         flexDirection: 'column',
         bgcolor: isDarkMode ? '#161616' : theme.palette.grey[100]
@@ -186,6 +186,7 @@ function Chat({ isDarkMode, toggleDarkMode, isMobile, initialApiKey }) {
               <MessageList
                 messages={messages}
                 isDarkMode={isDarkMode}
+                isMobile={isMobile}
                 isSpoken={isSpoken}
                 autoPlayEnabled={autoPlayEnabled}
               />

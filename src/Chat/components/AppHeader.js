@@ -83,11 +83,14 @@ export const AppHeader = ({
   return (
     <StyledAppBar
       className={`chatAppBar ${isDarkMode ? 'dark-mode' : ''} animate ${isThinking ? 'fast' : ''}`}
-      position="sticky"
+      position="static"
       sx={{
         boxShadow: 5,
         zIndex: theme.zIndex.drawer + 1,
-        position: "sticky"
+        position: "static",
+        top: 0,
+        left: 0,
+        right: 0
       }}
     >
       <Toolbar sx={{ display: 'flex', justifyContent: 'space-between' }}>

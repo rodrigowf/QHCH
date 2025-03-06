@@ -5,7 +5,7 @@ import { useTheme } from '@mui/material';
 import VolumeUpIcon from '@mui/icons-material/VolumeUp';
 import PauseIcon from '@mui/icons-material/Pause';
 
-export const MessageList = ({ messages, isDarkMode, autoPlayEnabled }) => {
+export const MessageList = ({ messages, isDarkMode, autoPlayEnabled, isMobile }) => {
   const messagesEndRef = useRef(null);
   const theme = useTheme();
   const [isSpeaking, setIsSpeaking] = useState(false);
@@ -106,7 +106,7 @@ export const MessageList = ({ messages, isDarkMode, autoPlayEnabled }) => {
       flexGrow: 1,
       overflowY: 'auto',
       height: '100%',
-      paddingBottom: '80px',
+      paddingBottom: '4px',
     }}>
       {messages.map((msg, index) => (
         <ListItem
@@ -122,8 +122,9 @@ export const MessageList = ({ messages, isDarkMode, autoPlayEnabled }) => {
               <MessageBox
                 role={msg.role}
                 isDarkMode={isDarkMode}
+                isMobile={isMobile}
                 theme={theme}
-                style={{ position: 'relative', paddingRight: '40px' }}
+                style={{ position: 'relative' }}
               >
                 {activeSpeech && activeSpeech.messageIndex === index ? (
                   getChunks(msg.content).map((chunk, i) => (
@@ -154,7 +155,7 @@ export const MessageList = ({ messages, isDarkMode, autoPlayEnabled }) => {
               </IconButton>
             </div>
           ) : (
-            <MessageBox role={msg.role} isDarkMode={isDarkMode} theme={theme}>
+            <MessageBox role={msg.role} isDarkMode={isDarkMode} theme={theme} isMobile={isMobile}>
               {msg.content}
             </MessageBox>
           )}
