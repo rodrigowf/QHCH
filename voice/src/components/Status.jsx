@@ -1,4 +1,4 @@
-export function Status({ isConnected, isSpeaking }) {
+export function Status({ isConnected, isSpeaking, error }) {
     return (
         <div className="status-container">
             <div className={`status ${isConnected ? 'connected' : ''}`}>
@@ -7,6 +7,11 @@ export function Status({ isConnected, isSpeaking }) {
             <div className={`status ${isSpeaking ? 'speaking' : ''}`}>
                 {isSpeaking ? 'Speaking' : 'Not Speaking'}
             </div>
+            {error && (
+                <div className="status error">
+                    Error: {error}
+                </div>
+            )}
         </div>
     );
 } 

@@ -9,9 +9,16 @@ export class WebRTCService {
         this.onStatusChange = onStatusChange;
         this.onSpeechChange = onSpeechChange;
         this.onMessage = onMessage;
+
+        // State management
+        this.currentResponse = {
+            text: '',
+            role: null,
+            responseId: null
+        };
     }
 
-    async connect(apiKey) {
+    async connect(apiKey, systemPrompt) {
         try {
             // Create and configure peer connection
             this.peerConnection = new RTCPeerConnection();
@@ -23,6 +30,15 @@ export class WebRTCService {
 
             // Set up data channel for events
             this.dataChannel = this.peerConnection.createDataChannel('oai-events');
+            
+            // Create a promise that resolves when the data channel opens
+            const dataChannelReady = new Promise((resolve) => {
+                this.dataChannel.onopen = () => {
+                    console.log('Data channel opened');
+                    resolve();
+                };
+            });
+            
             this.setupDataChannel();
 
             // Add local audio track
@@ -56,6 +72,14 @@ export class WebRTCService {
             };
             await this.peerConnection.setRemoteDescription(answer);
 
+            // Wait for data channel to be ready before setting system prompt
+            await dataChannelReady;
+
+            // Set system prompt after connection and data channel are established
+            if (systemPrompt) {
+                await this.setSystemPrompt(systemPrompt);
+            }
+
             this.onStatusChange(true);
             return true;
 
@@ -64,6 +88,19 @@ export class WebRTCService {
             await this.disconnect();
             throw error;
         }
+    }
+
+    async setSystemPrompt(systemPrompt) {
+        if (!this.dataChannel) return;
+
+        const sessionUpdate = {
+            type: 'session.update',
+            session: {
+                instructions: systemPrompt
+            }
+        };
+
+        this.dataChannel.send(JSON.stringify(sessionUpdate));
     }
 
     async disconnect() {
@@ -77,14 +114,15 @@ export class WebRTCService {
         }
         
         this.audioElement.srcObject = null;
+        this.currentResponse = {
+            text: '',
+            role: null,
+            responseId: null
+        };
         this.onStatusChange(false);
     }
 
     setupDataChannel() {
-        this.dataChannel.onopen = () => {
-            console.log('Data channel opened');
-        };
-
         this.dataChannel.onmessage = (event) => {
             const data = JSON.parse(event.data);
             this.handleServerEvent(data);
@@ -105,12 +143,42 @@ export class WebRTCService {
                 this.onSpeechChange(false);
                 break;
             
+            case 'response.created':
+                // Initialize new response
+                this.currentResponse = {
+                    text: '',
+                    role: 'ai',
+                    responseId: event.response.id
+                };
+                break;
+
             case 'response.text.delta':
-                this.onMessage('ai', event.delta);
+                // Accumulate text deltas
+                if (this.currentResponse.role === 'ai') {
+                    this.currentResponse.text += event.delta;
+                }
                 break;
             
             case 'response.audio_transcript.delta':
-                this.onMessage('user', event.delta);
+                // Accumulate transcript deltas
+                if (this.currentResponse.role !== 'user') {
+                    this.currentResponse = {
+                        text: event.delta,
+                        role: 'user',
+                        responseId: null
+                    };
+                } else {
+                    this.currentResponse.text += event.delta;
+                }
+                break;
+
+            case 'response.text.done':
+            case 'response.audio_transcript.done':
+                // Send accumulated message when complete
+                if (this.currentResponse.text.trim()) {
+                    this.onMessage(this.currentResponse.role, this.currentResponse.text.trim());
+                    this.currentResponse.text = '';
+                }
                 break;
             
             default:

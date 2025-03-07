@@ -9,15 +9,29 @@ export function Transcript({ messages }) {
         }
     }, [messages]);
 
+    const formatTimestamp = (timestamp) => {
+        return new Date(timestamp).toLocaleTimeString();
+    };
+
     return (
         <div className="conversation">
             <div ref={transcriptRef} className="transcript">
                 {messages.map((message, index) => (
                     <div
-                        key={index}
+                        key={`${message.timestamp}-${index}`}
                         className={`message ${message.role}-message`}
                     >
-                        {message.text}
+                        <div className="message-header">
+                            <span className="message-role">
+                                {message.role === 'ai' ? 'AI' : 'You'}
+                            </span>
+                            <span className="message-time">
+                                {formatTimestamp(message.timestamp)}
+                            </span>
+                        </div>
+                        <div className="message-content">
+                            {message.text}
+                        </div>
                     </div>
                 ))}
             </div>
