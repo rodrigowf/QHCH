@@ -11,7 +11,7 @@ const DARK_MODE_STORAGE_KEY = 'qhch_dark_mode';
 const CHAT_OPEN_STORAGE_KEY = 'qhch_chat_open';
 
 
-const MergedApp = () => {
+const App = () => {
   const [chatOpen, setChatOpen] = useState(null);
   const [isDarkMode, setIsDarkMode] = useState(null);
   const isMobile = useMediaQuery('(max-width:600px)');
@@ -134,9 +134,11 @@ const MergedApp = () => {
       >
         {!chatOpen ? <><ChatIcon sx={{mx: 1}}/>{!isMobile ? " Chat with QHCH" : ""}</> : <><CloseIcon sx={{mx: 1}}/>{!isMobile ? " Close Chat " : ""}</>}
       </Button>
-      {/* <LogRecorder /> */}
+
+      <LogRecorder />
+
     </Box>
   );
 };
 
-export default MergedApp; 
+export default App; 

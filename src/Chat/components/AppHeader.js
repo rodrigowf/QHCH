@@ -19,6 +19,8 @@ import Brightness4Icon from '@mui/icons-material/Brightness4';
 import Brightness7Icon from '@mui/icons-material/Brightness7';
 import PlayCircleFilledIcon from '@mui/icons-material/PlayCircleFilled';
 import PlayCircleOutlineIcon from '@mui/icons-material/PlayCircleOutline';
+import RecordVoiceOverIcon from '@mui/icons-material/RecordVoiceOver';
+import ChatIcon from '@mui/icons-material/Chat';
 import { availableAgents } from '../prompts';
 import { styled } from '@mui/material/styles';
 import { ControlsContainer, StyledFormControl } from '../styled/AppHeader.styled';
@@ -76,7 +78,9 @@ export const AppHeader = ({
   handleChangeApiKey,
   isThinking,
   autoPlayEnabled,
-  toggleAutoPlay
+  toggleAutoPlay,
+  isVoiceMode,
+  toggleVoiceMode,
 }) => {
   const theme = useTheme();
 
@@ -113,15 +117,22 @@ export const AppHeader = ({
             QHCH Chat
           </Typography>
         </Box>
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-          <Tooltip
-            sx={{mr: isMobile ? 8 : 2}} 
-            title={autoPlayEnabled ? "Disable Auto Play" : "Enable Auto Play"}
-          >
-            <IconButton color="inherit" onClick={toggleAutoPlay}>
-              {autoPlayEnabled ? <PlayCircleFilledIcon /> : <PlayCircleOutlineIcon />}
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 3 }}>
+          <Tooltip title={isVoiceMode ? "Switch to Text Mode" : "Switch to Voice Mode"}>
+            <IconButton color="inherit" onClick={toggleVoiceMode}>
+              {isVoiceMode ? <ChatIcon /> : <RecordVoiceOverIcon />}
             </IconButton>
           </Tooltip>
+          {!isVoiceMode && (
+            <Tooltip
+              sx={{mr: isMobile ? 8 : 2}} 
+              title={autoPlayEnabled ? "Disable Auto Play" : "Enable Auto Play"}
+            >
+              <IconButton color="inherit" onClick={toggleAutoPlay}>
+                {autoPlayEnabled ? <PlayCircleFilledIcon /> : <PlayCircleOutlineIcon />}
+              </IconButton>
+            </Tooltip>
+          )}
           {!isMobile && 
             <SessionControls 
               isDarkMode={isDarkMode}

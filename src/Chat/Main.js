@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import {
   Container,
   Box,
@@ -12,13 +12,18 @@ import { AppHeader } from './components/AppHeader';
 import { ChatDrawer } from './components/ChatDrawer';
 import { MessageList } from './components/MessageList';
 import { ChatInput } from './components/ChatInput';
+import { VoiceChatInput } from './components/VoiceChatInput';
 import { ApiKeyDialog } from './components/ApiKeyDialog';
 import { CustomSnackbar } from './components/CustomSnackbar';
 
 import { useApiKey } from './hooks/useApiKey';
 import { useConversations } from './hooks/useConversations';
 import { useChat } from './hooks/useChat';
+import { useVoiceChatWithStorage } from './hooks/useVoiceChatWithStorage';
 import { createAppTheme } from './theme/createAppTheme';
+import { agentPrompts } from './prompts';
+
+const VOICE_MODE_STORAGE_KEY = 'qhch_voice_mode';
 
 function Chat({ isDarkMode, toggleDarkMode, isMobile, initialApiKey }) {
   const [snackbarOpen, setSnackbarOpen] = useState(false);
@@ -27,6 +32,10 @@ function Chat({ isDarkMode, toggleDarkMode, isMobile, initialApiKey }) {
   const [drawerOpen, setDrawerOpen] = useState(true);
   const [isSpoken, setIsSpoken] = useState(false);
   const [autoPlayEnabled, setAutoPlayEnabled] = useState(false);
+  const [isVoiceMode, setIsVoiceMode] = useState(() => {
+    const stored = localStorage.getItem(VOICE_MODE_STORAGE_KEY);
+    return stored ? JSON.parse(stored) : false;
+  });
 
   const theme = createAppTheme(isDarkMode);
 
@@ -47,7 +56,7 @@ function Chat({ isDarkMode, toggleDarkMode, isMobile, initialApiKey }) {
     tempApiKey,
     setTempApiKey,
     handleSaveApiKey,
-    handleChangeApiKey
+    handleChangeApiKey,
   } = useApiKey(initialApiKey);
 
   const {
@@ -59,6 +68,7 @@ function Chat({ isDarkMode, toggleDarkMode, isMobile, initialApiKey }) {
     startNewConversation,
     saveConversation,
     handleBackupConversations,
+    handleDeleteConversation,
     formatTimestamp,
   } = useConversations();
 
@@ -71,6 +81,80 @@ function Chat({ isDarkMode, toggleDarkMode, isMobile, initialApiKey }) {
     getCurrentAgent,
     handleSend,
   } = useChat(apiKey, messages, setMessages, saveConversation, showSnackbar);
+
+  // Voice chat integration
+  const systemPrompt = useMemo(
+    () =>
+      selectedAgent
+        ? agentPrompts[selectedAgent]?.systemPrompt
+        : agentPrompts['specialist'].systemPrompt,
+    [selectedAgent]
+  );
+
+  const {
+    mediaStream,
+    isConnected,
+    isSpeaking,
+    error: voiceError,
+    messages: voiceMessages,
+    connect: connectVoice,
+    disconnect: disconnectVoice,
+    updateSystemPrompt,
+  } = useVoiceChatWithStorage(systemPrompt, saveConversation, selectedAgent);
+
+  // Update messages when voice messages change
+  useEffect(() => {
+    if (isVoiceMode && voiceMessages.length > 0) {
+      setMessages(voiceMessages);
+    }
+  }, [isVoiceMode, voiceMessages]);
+
+  // Handle voice mode toggle
+  const toggleVoiceMode = async () => {
+    if (isVoiceMode && isConnected) {
+      await disconnectVoice();
+    } else if (!isVoiceMode) {
+      // Clear messages when switching to voice mode
+      setMessages([]);
+    }
+    setIsVoiceMode((prev) => !prev);
+    localStorage.setItem(VOICE_MODE_STORAGE_KEY, JSON.stringify(!isVoiceMode));
+  };
+
+  useEffect(() => {
+    if(isVoiceMode) setAutoPlayEnabled(false);
+  }, [isVoiceMode]);
+
+  // Update system prompt when agent changes
+  useEffect(() => {
+    if (isConnected && systemPrompt) {
+      updateSystemPrompt(systemPrompt).catch((error) => {
+        console.error('Failed to update system prompt:', error);
+        showSnackbar('Failed to update system prompt', 'error');
+      });
+    }
+  }, [systemPrompt, isConnected, updateSystemPrompt]);
+
+  // Disconnect voice chat when component unmounts
+  useEffect(() => {
+    return () => {
+      if (isConnected) {
+        disconnectVoice().catch(console.error);
+      }
+    };
+  }, [isConnected, disconnectVoice]);
+
+  // Handle agent change
+  const handleAgentChange = (newAgentId) => {
+    setSelectedAgent(newAgentId);
+    if (isVoiceMode && isConnected) {
+      const newPrompt = agentPrompts[newAgentId].systemPrompt;
+      updateSystemPrompt(newPrompt).catch((error) => {
+        console.error('Failed to update system prompt:', error);
+        showSnackbar('Failed to update system prompt', 'error');
+      });
+    }
+  };
 
   React.useEffect(() => {
     if (isMobile) {
@@ -102,18 +186,20 @@ function Chat({ isDarkMode, toggleDarkMode, isMobile, initialApiKey }) {
   };
 
   const toggleAutoPlay = () => {
-    setAutoPlayEnabled(prev => !prev);
+    setAutoPlayEnabled((prev) => !prev);
   };
 
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <Box sx={{
-        height: '100%',
-        display: 'flex',
-        flexDirection: 'column',
-        bgcolor: isDarkMode ? '#161616' : theme.palette.grey[100]
-      }}>
+      <Box
+        sx={{
+          height: '100%',
+          display: 'flex',
+          flexDirection: 'column',
+          bgcolor: isDarkMode ? '#161616' : theme.palette.grey[100],
+        }}
+      >
         <AppHeader
           isDarkMode={isDarkMode}
           toggleDarkMode={toggleDarkMode}
@@ -122,23 +208,27 @@ function Chat({ isDarkMode, toggleDarkMode, isMobile, initialApiKey }) {
           setDrawerOpen={setDrawerOpen}
           selectedAgent={selectedAgent}
           getCurrentAgent={getCurrentAgent}
-          setSelectedAgent={setSelectedAgent}
+          setSelectedAgent={handleAgentChange}
           handleChangeApiKey={handleChangeApiKey}
           isThinking={loading}
           autoPlayEnabled={autoPlayEnabled}
           toggleAutoPlay={toggleAutoPlay}
+          isVoiceMode={isVoiceMode}
+          toggleVoiceMode={toggleVoiceMode}
         />
 
-        <Box sx={{ 
-          display: 'flex', 
-          flexGrow: 1,
-          bgcolor: isDarkMode ? '#161616' : 'linear-gradient(135deg, #29435d 0%, #3498db 100%)',
-          position: 'fixed',
-          top: isMobile ? '50px' : '65px',
-          width: '100vw',
-          height: 'calc(100% - 65px)',
-          overflow: 'hidden',
-        }}>
+        <Box
+          sx={{
+            display: 'flex',
+            flexGrow: 1,
+            bgcolor: isDarkMode ? '#161616' : 'linear-gradient(135deg, #29435d 0%, #3498db 100%)',
+            position: 'fixed',
+            top: isMobile ? '50px' : '65px',
+            width: '100vw',
+            height: 'calc(100% - 65px)',
+            overflow: 'hidden',
+          }}
+        >
           <ChatDrawer
             isDarkMode={isDarkMode}
             isMobile={isMobile}
@@ -149,40 +239,46 @@ function Chat({ isDarkMode, toggleDarkMode, isMobile, initialApiKey }) {
             loadConversation={handleLoadConversation}
             startNewConversation={handleStartNewConversation}
             handleBackupConversations={handleBackupClick}
+            handleDeleteConversation={handleDeleteConversation}
             formatTimestamp={formatTimestamp}
             selectedAgent={selectedAgent}
-            setSelectedAgent={setSelectedAgent}
+            setSelectedAgent={handleAgentChange}
             getCurrentAgent={getCurrentAgent}
             handleChangeApiKey={handleChangeApiKey}
             toggleDarkMode={toggleDarkMode}
             theme={theme}
           />
 
-          <Container maxWidth="md" sx={{ 
-            flexGrow: 1,
-            display: 'flex',
-            flexDirection: 'column',
-            py: isMobile ? 0 : 2,
-            gap: 2,
-            height: '100%',
-            bgcolor: isDarkMode ? '#161616' : 'transparent',
-            overflow: 'hidden',
-            ...(isMobile && {
-              padding: 0,
-              maxWidth: '100% !important',
-            })
-          }}>
-            <Paper sx={{
+          <Container
+            maxWidth="md"
+            sx={{
               flexGrow: 1,
               display: 'flex',
               flexDirection: 'column',
-              overflow: 'hidden',
-              boxShadow: 3,
-              borderRadius: isMobile ? 1 : 2,
-              bgcolor: isDarkMode ? '#1e1e1e' : theme.palette.background.paper,
+              py: isMobile ? 0 : 2,
+              gap: 2,
               height: '100%',
-              overflowY: 'auto'
-            }}>
+              bgcolor: isDarkMode ? '#161616' : 'transparent',
+              overflow: 'hidden',
+              ...(isMobile && {
+                padding: 0,
+                maxWidth: '100% !important',
+              }),
+            }}
+          >
+            <Paper
+              sx={{
+                flexGrow: 1,
+                display: 'flex',
+                flexDirection: 'column',
+                overflow: 'hidden',
+                boxShadow: 3,
+                borderRadius: isMobile ? 1 : 2,
+                bgcolor: isDarkMode ? '#1e1e1e' : theme.palette.background.paper,
+                height: '100%',
+                overflowY: 'auto',
+              }}
+            >
               <MessageList
                 messages={messages}
                 isDarkMode={isDarkMode}
@@ -191,16 +287,32 @@ function Chat({ isDarkMode, toggleDarkMode, isMobile, initialApiKey }) {
                 autoPlayEnabled={autoPlayEnabled}
               />
 
-              <ChatInput
-                isDarkMode={isDarkMode}
-                input={input}
-                setInput={setInput}
-                loading={loading}
-                apiKey={apiKey}
-                handleSend={handleSend}
-                isMobile={isMobile}
-                setIsSpoken={setIsSpoken}
-              />
+              {isVoiceMode ? (
+                <VoiceChatInput
+                  isDarkMode={isDarkMode}
+                  isMobile={isMobile}
+                  isConnected={isConnected}
+                  isSpeaking={isSpeaking}
+                  error={voiceError}
+                  loading={loading}
+                  apiKey={apiKey}
+                  onConnect={connectVoice}
+                  onDisconnect={disconnectVoice}
+                  mediaStream={mediaStream}
+                />
+              ) : (
+                <ChatInput
+                  isDarkMode={isDarkMode}
+                  input={input}
+                  setInput={setInput}
+                  loading={loading}
+                  apiKey={apiKey}
+                  handleSend={handleSend}
+                  isMobile={isMobile}
+                  setIsSpoken={setIsSpoken}
+                  setIsAdvancedVoiceMode={setIsVoiceMode}
+                />
+              )}
             </Paper>
           </Container>
         </Box>

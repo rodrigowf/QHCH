@@ -89,14 +89,11 @@ export const MessageList = ({ messages, isDarkMode, autoPlayEnabled, isMobile })
   }, [messages]);
 
   // Auto-play new assistant messages if enabled
-  const lastAutoPlayedIndex = useRef(-1);
   useEffect(() => {
     if (autoPlayEnabled && messages.length > 0) {
-      const lastIndex = messages.length - 1;
-      const lastMessage = messages[lastIndex];
-      if (lastMessage.role === 'assistant' && lastIndex > lastAutoPlayedIndex.current) {
-        lastAutoPlayedIndex.current = lastIndex;
-        speakMessage(lastMessage.content, lastIndex);
+      const lastMessage = messages[messages.length - 1];
+      if (lastMessage.role === 'assistant') {
+        speakMessage(lastMessage.content, messages.length - 1);
       }
     }
   }, [messages, autoPlayEnabled]);
