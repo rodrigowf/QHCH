@@ -117,22 +117,21 @@ export const AppHeader = ({
             QHCH Chat
           </Typography>
         </Box>
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 3 }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mr: isMobile ? 8 : 2 }}>
           <Tooltip title={isVoiceMode ? "Switch to Text Mode" : "Switch to Voice Mode"}>
             <IconButton color="inherit" onClick={toggleVoiceMode}>
               {isVoiceMode ? <ChatIcon /> : <RecordVoiceOverIcon />}
             </IconButton>
           </Tooltip>
-          {!isVoiceMode && (
-            <Tooltip
-              sx={{mr: isMobile ? 8 : 2}} 
-              title={autoPlayEnabled ? "Disable Auto Play" : "Enable Auto Play"}
-            >
-              <IconButton color="inherit" onClick={toggleAutoPlay}>
-                {autoPlayEnabled ? <PlayCircleFilledIcon /> : <PlayCircleOutlineIcon />}
-              </IconButton>
-            </Tooltip>
-          )}
+          {!isVoiceMode && (<>
+              <Tooltip
+                title={autoPlayEnabled ? "Disable Auto Play" : "Enable Auto Play"}
+              >
+                <IconButton color="inherit" onClick={toggleAutoPlay}>
+                  {autoPlayEnabled ? <PlayCircleFilledIcon /> : <PlayCircleOutlineIcon />}
+                </IconButton>
+              </Tooltip>
+            </>)}
           {!isMobile && 
             <SessionControls 
               isDarkMode={isDarkMode}

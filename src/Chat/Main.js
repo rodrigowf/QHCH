@@ -92,7 +92,6 @@ function Chat({ isDarkMode, toggleDarkMode, isMobile, initialApiKey }) {
   );
 
   const {
-    mediaStream,
     isConnected,
     isSpeaking,
     error: voiceError,
@@ -298,7 +297,6 @@ function Chat({ isDarkMode, toggleDarkMode, isMobile, initialApiKey }) {
                   apiKey={apiKey}
                   onConnect={connectVoice}
                   onDisconnect={disconnectVoice}
-                  mediaStream={mediaStream}
                 />
               ) : (
                 <ChatInput

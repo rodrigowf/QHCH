@@ -1,8 +1,6 @@
 import { useState, useCallback, useRef, useEffect } from 'react';
 import { WebRTCService } from '../services/webrtcService';
 
-export const mediaStream = await navigator.mediaDevices.getUserMedia({ audio: true });
-
 export function useVoiceChat(systemPrompt) {
     const [isConnected, setIsConnected] = useState(false);
     const [isSpeaking, setIsSpeaking] = useState(false);
@@ -13,6 +11,7 @@ export function useVoiceChat(systemPrompt) {
     const audioContextRef = useRef(null);
     const analyserRef = useRef(null);
     const animationFrameRef = useRef(null);
+    const mediaStreamRef = useRef(null);
 
     const handleStatusChange = useCallback((status) => {
         setIsConnected(status);
@@ -90,16 +89,29 @@ export function useVoiceChat(systemPrompt) {
     const connect = useCallback(async (apiKey) => {
         try {
             setError(null);
+            
+            // Check if mediaDevices API is available
+            if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                throw new Error('Media devices are not supported in this browser');
+            }
+
+            // Get media stream with proper error handling
+            try {
+                mediaStreamRef.current = await navigator.mediaDevices.getUserMedia({ audio: true });
+            } catch (mediaError) {
+                throw new Error(`Failed to access microphone: ${mediaError.message}`);
+            }
+
             if (!webrtcRef.current) {
                 webrtcRef.current = new WebRTCService(
-                    mediaStream,
+                    mediaStreamRef.current,
                     handleStatusChange,
                     handleSpeechChange,
                     handleMessage
                 );
             }
             await webrtcRef.current.connect(apiKey, systemPrompt);
-            setupAudioAnalyser(mediaStream);
+            setupAudioAnalyser(mediaStreamRef.current);
         } catch (error) {
             setError(error.message);
             console.error('Failed to connect:', error);
@@ -113,6 +125,11 @@ export function useVoiceChat(systemPrompt) {
                 await webrtcRef.current.disconnect();
                 webrtcRef.current = null;
                 cleanupAudioAnalyser();
+            }
+            // Clean up media stream
+            if (mediaStreamRef.current) {
+                mediaStreamRef.current.getTracks().forEach(track => track.stop());
+                mediaStreamRef.current = null;
             }
         } catch (error) {
             setError(error.message);

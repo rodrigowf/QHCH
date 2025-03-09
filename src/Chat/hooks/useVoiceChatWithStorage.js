@@ -1,5 +1,5 @@
 import { useCallback, useEffect } from 'react';
-import { useVoiceChat, mediaStream } from './useVoiceChat';
+import { useVoiceChat } from './useVoiceChat';
 
 const truncateInstructions = (obj) => {
   if (obj?.session?.instructions) {
@@ -62,7 +62,6 @@ export function useVoiceChatWithStorage(systemPrompt, saveConversation, selected
   }, [isConnected, systemPrompt, updateSystemPrompt]);
 
   return {
-    mediaStream,
     isConnected,
     isSpeaking,
     messages,
