@@ -6,6 +6,8 @@ import {
   keyframes,
   styled,
   useTheme,
+  Snackbar,
+  Alert,
 } from '@mui/material';
 import MicIcon from '@mui/icons-material/Mic';
 import MicOffIcon from '@mui/icons-material/MicOff';
@@ -94,19 +96,87 @@ export const VoiceChatInput = ({
   onConnect,
   onDisconnect,
   audioLevel = 0,
+  isMobile,
+  error
 }) => {
   const theme = useTheme();
+  const [errorMessage, setErrorMessage] = React.useState('');
+  const [permissionState, setPermissionState] = React.useState('prompt');
+
+  // Check initial permission state
+  React.useEffect(() => {
+    const checkPermission = async () => {
+      try {
+        const result = await navigator.permissions.query({ name: 'microphone' });
+        setPermissionState(result.state);
+        
+        // Listen for permission changes
+        result.onchange = () => {
+          setPermissionState(result.state);
+        };
+      } catch (error) {
+        console.warn('Permission query not supported:', error);
+      }
+    };
+    
+    checkPermission();
+  }, []);
+
+  const requestMicrophoneAccess = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      // Stop the stream immediately as we just want the permission
+      stream.getTracks().forEach(track => track.stop());
+      setPermissionState('granted');
+      return true;
+    } catch (error) {
+      console.error('Microphone permission error:', error);
+      if (error.name === 'NotAllowedError') {
+        setErrorMessage('Microphone access was denied. Please allow microphone access in your browser settings.');
+      } else if (error.name === 'NotFoundError') {
+        setErrorMessage('No microphone found. Please ensure your device has a working microphone.');
+      } else {
+        setErrorMessage('Failed to access microphone: ' + error.message);
+      }
+      return false;
+    }
+  };
 
   const handleToggleConnection = async () => {
     if (isConnected) {
       await onDisconnect();
     } else {
       try {
+        // First ensure we have microphone permission
+        if (permissionState !== 'granted') {
+          const granted = await requestMicrophoneAccess();
+          if (!granted) return;
+        }
+        
+        // Then proceed with connection
         await onConnect(apiKey);
       } catch (error) {
-        console.error('Failed to connect:', error);
+        console.error('Connection error:', error);
+        setErrorMessage(error.message || 'Failed to connect. Please try again.');
       }
     }
+  };
+
+  // Show different button states based on permission
+  const getButtonContent = () => {
+    if (loading) {
+      return <CircularProgress size={28} color="inherit" />;
+    }
+    
+    if (isConnected) {
+      return <MicOffIcon fontSize={isMobile ? "medium" : "large"} />;
+    }
+    
+    if (permissionState === 'denied') {
+      return <MicOffIcon fontSize={isMobile ? "medium" : "large"} style={{ color: theme.palette.error.main }} />;
+    }
+    
+    return <MicIcon fontSize={isMobile ? "medium" : "large"} />;
   };
 
   return (
@@ -123,18 +193,46 @@ export const VoiceChatInput = ({
             isConnected={isConnected}
             isDarkMode={isDarkMode}
             onClick={handleToggleConnection}
-            disabled={!apiKey || loading}
+            disabled={!apiKey || loading || permissionState === 'denied'}
+            sx={{
+              width: isMobile ? '64px' : '72px',
+              height: isMobile ? '64px' : '72px',
+              ...(isMobile && {
+                '&:active': {
+                  transform: 'scale(0.95)',
+                },
+              }),
+              ...(permissionState === 'denied' && {
+                bgcolor: theme.palette.error.main + '!important',
+                opacity: 0.7,
+              }),
+            }}
           >
-            {loading ? (
-              <CircularProgress size={28} color="inherit" />
-            ) : isConnected ? (
-              <MicOffIcon fontSize="large" />
-            ) : (
-              <MicIcon fontSize="large" />
-            )}
+            {getButtonContent()}
           </VoiceButton>
         </VoiceButtonContainer>
       </CenterContainer>
+      
+      <Snackbar 
+        open={!!errorMessage} 
+        autoHideDuration={6000} 
+        onClose={() => setErrorMessage('')}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+      >
+        <Alert 
+          onClose={() => setErrorMessage('')} 
+          severity="error" 
+          sx={{ 
+            width: '100%',
+            ...(isMobile && {
+              fontSize: '0.875rem',
+              padding: '6px 12px',
+            }),
+          }}
+        >
+          {errorMessage}
+        </Alert>
+      </Snackbar>
     </ChatInputContainer>
   );
-}; 
+};

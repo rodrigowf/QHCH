@@ -4,6 +4,9 @@ export class WebRTCService {
         this.dataChannel = null;
         this.audioElement = document.createElement('audio');
         this.audioElement.autoplay = true;
+        // Enable playback on mobile
+        this.audioElement.playsInline = true;
+        this.audioElement.muted = false;
         this.mediaStream = mediaStream;
         
         // Callbacks
@@ -37,17 +40,96 @@ export class WebRTCService {
             
             // Ensure cleanup of any existing connection
             await this.disconnect();
-            
-            // Create and configure peer connection
-            this.peerConnection = new RTCPeerConnection();
-            
-            // Handle remote audio stream
-            this.peerConnection.ontrack = (event) => {
-                this.audioElement.srcObject = event.streams[0];
+
+            // Mobile-friendly audio constraints with fallback options
+            const audioConstraints = {
+                audio: {
+                    echoCancellation: { ideal: true },
+                    noiseSuppression: { ideal: true },
+                    autoGainControl: { ideal: true },
+                    // Start with lower quality for mobile
+                    sampleRate: { ideal: 44100, min: 22050 },
+                    channelCount: { ideal: 1 },
+                    // Add mobile-specific constraints
+                    googEchoCancellation: { ideal: true },
+                    googAutoGainControl: { ideal: true },
+                    googNoiseSuppression: { ideal: true },
+                    googHighpassFilter: { ideal: true }
+                }
             };
 
-            // Set up data channel for events
-            this.dataChannel = this.peerConnection.createDataChannel('oai-events');
+            // Verify and request permissions if needed
+            if (!this.mediaStream || !this.mediaStream.active) {
+                try {
+                    this.mediaStream = await navigator.mediaDevices.getUserMedia(audioConstraints);
+                } catch (mediaError) {
+                    if (mediaError.name === 'NotAllowedError') {
+                        throw new Error('Microphone access denied. Please grant microphone permissions in your browser settings.');
+                    } else if (mediaError.name === 'NotFoundError') {
+                        throw new Error('No microphone found. Please ensure your device has a working microphone.');
+                    } else if (mediaError.name === 'NotReadableError') {
+                        throw new Error('Cannot access microphone. It may be in use by another application.');
+                    }
+                    throw mediaError;
+                }
+            }
+            
+            // Create and configure peer connection with mobile-optimized settings
+            const configuration = {
+                iceServers: [
+                    { urls: 'stun:stun.l.google.com:19302' },
+                    { urls: 'stun:stun1.l.google.com:19302' }
+                ],
+                bundlePolicy: 'max-bundle',
+                rtcpMuxPolicy: 'require',
+                iceCandidatePoolSize: 1
+            };
+            
+            this.peerConnection = new RTCPeerConnection(configuration);
+            
+            // Enhanced error handling for connection state changes
+            this.peerConnection.onconnectionstatechange = () => {
+                console.log('Connection state:', this.peerConnection.connectionState);
+                switch (this.peerConnection.connectionState) {
+                    case 'connected':
+                        console.log('WebRTC connection established');
+                        break;
+                    case 'disconnected':
+                    case 'failed':
+                        console.error('WebRTC connection failed or disconnected');
+                        this.disconnect();
+                        this.onStatusChange(false);
+                        break;
+                    case 'closed':
+                        console.log('WebRTC connection closed');
+                        this.onStatusChange(false);
+                        break;
+                }
+            };
+
+            // Handle remote audio stream with enhanced mobile support
+            this.peerConnection.ontrack = (event) => {
+                if (this.audioElement.srcObject !== event.streams[0]) {
+                    this.audioElement.srcObject = event.streams[0];
+                    
+                    // Ensure audio playback works on mobile
+                    const playPromise = this.audioElement.play();
+                    if (playPromise !== undefined) {
+                        playPromise.catch(error => {
+                            console.warn('Audio playback failed:', error);
+                            // Try to recover from common mobile audio issues
+                            this.audioElement.muted = false;
+                            this.audioElement.play().catch(console.error);
+                        });
+                    }
+                }
+            };
+
+            // Set up data channel for events with mobile-optimized settings
+            this.dataChannel = this.peerConnection.createDataChannel('oai-events', {
+                ordered: true,
+                maxRetransmits: 3
+            });
             
             // Create a promise that resolves when the data channel opens
             const dataChannelReady = new Promise((resolve) => {
@@ -113,6 +195,13 @@ export class WebRTCService {
             console.log("Sent session update:", sessionUpdate);
 
             this.onStatusChange(true);
+
+            // Add mobile-specific error handling for audio element
+            this.audioElement.onerror = (error) => {
+                console.error('Audio element error:', error);
+                this.onStatusChange(false);
+            };
+
             return true;
 
         } catch (error) {

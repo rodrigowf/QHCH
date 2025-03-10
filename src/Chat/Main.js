@@ -108,16 +108,28 @@ function Chat({ isDarkMode, toggleDarkMode, isMobile, initialApiKey }) {
     }
   }, [isVoiceMode, voiceMessages]);
 
-  // Handle voice mode toggle
-  const toggleVoiceMode = async () => {
-    if (isVoiceMode && isConnected) {
-      await disconnectVoice();
-    } else if (!isVoiceMode) {
-      // Clear messages when switching to voice mode
-      setMessages([]);
+  // Add error handling for voice mode
+  const handleVoiceModeToggle = async () => {
+    try {
+      if (isVoiceMode && isConnected) {
+        await disconnectVoice();
+      } else {
+        // Request permissions early on mobile
+        if (isMobile) {
+          try {
+            await navigator.mediaDevices.getUserMedia({ audio: true });
+          } catch (error) {
+            showSnackbar('Please grant microphone permissions to use voice mode', 'error');
+            return;
+          }
+        }
+      }
+      setIsVoiceMode((prev) => !prev);
+      localStorage.setItem(VOICE_MODE_STORAGE_KEY, JSON.stringify(!isVoiceMode));
+    } catch (error) {
+      console.error('Error toggling voice mode:', error);
+      showSnackbar('Failed to toggle voice mode: ' + error.message, 'error');
     }
-    setIsVoiceMode((prev) => !prev);
-    localStorage.setItem(VOICE_MODE_STORAGE_KEY, JSON.stringify(!isVoiceMode));
   };
 
   useEffect(() => {
@@ -213,69 +225,37 @@ function Chat({ isDarkMode, toggleDarkMode, isMobile, initialApiKey }) {
           autoPlayEnabled={autoPlayEnabled}
           toggleAutoPlay={toggleAutoPlay}
           isVoiceMode={isVoiceMode}
-          toggleVoiceMode={toggleVoiceMode}
+          toggleVoiceMode={handleVoiceModeToggle}
         />
 
         <Box
+          component="main"
           sx={{
-            display: 'flex',
             flexGrow: 1,
-            bgcolor: isDarkMode ? '#161616' : 'linear-gradient(135deg, #29435d 0%, #3498db 100%)',
-            position: 'fixed',
-            top: isMobile ? '50px' : '65px',
-            width: '100vw',
-            height: 'calc(100% - 65px)',
+            position: 'relative',
+            height: '100%',
             overflow: 'hidden',
+            pt: `${isMobile ? '50px' : '65px'}`,
           }}
         >
-          <ChatDrawer
-            isDarkMode={isDarkMode}
-            isMobile={isMobile}
-            drawerOpen={drawerOpen}
-            setDrawerOpen={setDrawerOpen}
-            conversations={conversations}
-            selectedConversation={selectedConversation}
-            loadConversation={handleLoadConversation}
-            startNewConversation={handleStartNewConversation}
-            handleBackupConversations={handleBackupClick}
-            handleDeleteConversation={handleDeleteConversation}
-            formatTimestamp={formatTimestamp}
-            selectedAgent={selectedAgent}
-            setSelectedAgent={handleAgentChange}
-            getCurrentAgent={getCurrentAgent}
-            handleChangeApiKey={handleChangeApiKey}
-            toggleDarkMode={toggleDarkMode}
-            theme={theme}
-          />
-
           <Container
-            maxWidth="md"
+            maxWidth="xl"
             sx={{
-              flexGrow: 1,
-              display: 'flex',
-              flexDirection: 'column',
-              py: isMobile ? 0 : 2,
-              gap: 2,
               height: '100%',
-              bgcolor: isDarkMode ? '#161616' : 'transparent',
-              overflow: 'hidden',
-              ...(isMobile && {
-                padding: 0,
-                maxWidth: '100% !important',
-              }),
+              py: isMobile ? 0 : 2,
+              px: isMobile ? 1 : 3,
             }}
           >
             <Paper
+              elevation={isDarkMode ? 0 : 2}
               sx={{
-                flexGrow: 1,
+                height: '100%',
                 display: 'flex',
                 flexDirection: 'column',
-                overflow: 'hidden',
-                boxShadow: 3,
+                bgcolor: isDarkMode ? 'background.paper' : '#fff',
                 borderRadius: isMobile ? 1 : 2,
-                bgcolor: isDarkMode ? '#1e1e1e' : theme.palette.background.paper,
-                height: '100%',
-                overflowY: 'auto',
+                overflow: 'hidden',
+                position: 'relative',
               }}
             >
               <MessageList
@@ -308,7 +288,7 @@ function Chat({ isDarkMode, toggleDarkMode, isMobile, initialApiKey }) {
                   handleSend={handleSend}
                   isMobile={isMobile}
                   setIsSpoken={setIsSpoken}
-                  setIsAdvancedVoiceMode={setIsVoiceMode}
+                  setIsVoiceMode={handleVoiceModeToggle}
                 />
               )}
             </Paper>
