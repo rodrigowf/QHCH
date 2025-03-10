@@ -135,7 +135,7 @@ const App = () => {
         {!chatOpen ? <><ChatIcon sx={{mx: 1}}/>{!isMobile ? " Chat with QHCH" : ""}</> : <><CloseIcon sx={{mx: 1}}/>{!isMobile ? " Close Chat " : ""}</>}
       </Button>
 
-      <LogRecorder />
+      {/* <LogRecorder /> */}
 
     </Box>
   );
