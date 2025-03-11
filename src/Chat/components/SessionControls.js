@@ -26,7 +26,7 @@ export const SessionControls = ({
     return (
         <ControlsContainer isMobile={isMobile}>
             <StyledFormControl isDarkMode={isDarkMode} isMobile={isMobile} variant="outlined" size="small">
-            <InputLabel>Select Agent</InputLabel>
+            <InputLabel>Select Character</InputLabel>
             <Select
                 value={selectedAgent}
                 onChange={(e) => setSelectedAgent(e.target.value)}
