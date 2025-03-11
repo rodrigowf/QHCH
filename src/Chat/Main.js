@@ -91,6 +91,8 @@ function Chat({ isDarkMode, toggleDarkMode, isMobile, initialApiKey }) {
     [selectedAgent]
   );
 
+  const voice = selectedAgent === 'sage' ? 'ash' : 'shimmer';
+
   const {
     isConnected,
     isSpeaking,
@@ -99,7 +101,7 @@ function Chat({ isDarkMode, toggleDarkMode, isMobile, initialApiKey }) {
     connect: connectVoice,
     disconnect: disconnectVoice,
     updateSystemPrompt,
-  } = useVoiceChatWithStorage(systemPrompt, saveConversation, selectedAgent);
+  } = useVoiceChatWithStorage(systemPrompt, saveConversation, selectedAgent, voice);
 
   // Update messages when voice messages change
   useEffect(() => {

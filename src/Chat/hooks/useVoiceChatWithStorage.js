@@ -19,7 +19,7 @@ console.log = (...args) => {
 };
 
 
-export function useVoiceChatWithStorage(systemPrompt, saveConversation, selectedAgent) {
+export function useVoiceChatWithStorage(systemPrompt, saveConversation, selectedAgent, voice) {
   const {
     isConnected,
     isSpeaking,
@@ -29,7 +29,7 @@ export function useVoiceChatWithStorage(systemPrompt, saveConversation, selected
     disconnect,
     updateSystemPrompt,
     clearMessages
-  } = useVoiceChat(systemPrompt);
+  } = useVoiceChat(systemPrompt, voice);
 
   // Save messages to storage whenever they change
   useEffect(() => {

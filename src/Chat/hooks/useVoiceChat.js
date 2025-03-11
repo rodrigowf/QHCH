@@ -1,7 +1,7 @@
 import { useState, useCallback, useRef, useEffect } from 'react';
 import { WebRTCService } from '../services/webrtcService';
 
-export function useVoiceChat(systemPrompt) {
+export function useVoiceChat(systemPrompt, voice = 'cove') {
     const [isConnected, setIsConnected] = useState(false);
     const [isSpeaking, setIsSpeaking] = useState(false);
     const [messages, setMessages] = useState([]);
@@ -107,10 +107,9 @@ export function useVoiceChat(systemPrompt) {
                     mediaStreamRef.current,
                     handleStatusChange,
                     handleSpeechChange,
-                    handleMessage
-                );
+                    handleMessage                );
             }
-            await webrtcRef.current.connect(apiKey, systemPrompt);
+            await webrtcRef.current.connect(apiKey, systemPrompt, voice);
             setupAudioAnalyser(mediaStreamRef.current);
         } catch (error) {
             setError(error.message);
@@ -153,6 +152,21 @@ export function useVoiceChat(systemPrompt) {
             console.error('Failed to update system prompt:', error);
         }
     }, [isConnected]);
+
+    // useEffect(() => {
+    //     const changeVoice = async (newVoice) => {
+    //         try {
+    //             await webrtcRef.current.setVoice(newVoice);
+    //         } catch (error) {
+    //             setError(error.message);
+    //             console.error('Failed to change voice:', error);
+    //         }
+    //     };
+
+    //     if (voice && webrtcRef.current && isConnected) {
+    //         changeVoice(voice);
+    //     }
+    // }, [voice, isConnected]);
 
     const clearMessages = useCallback(() => {
         setMessages([]);

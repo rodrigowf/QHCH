@@ -23,9 +23,12 @@ export class WebRTCService {
 
         // Add system prompt tracking
         this.currentSystemPrompt = null;
+
+        // Add voice tracking for voice switching
+        this.currentVoice = null;
     }
 
-    async connect(apiKey, systemPrompt) {
+    async connect(apiKey, systemPrompt, voice = 'echo') {  // Added optional 'voice' parameter
         // Prevent multiple simultaneous connection attempts
         if (this.isConnecting) {
             console.log('Connection already in progress');
@@ -99,6 +102,11 @@ export class WebRTCService {
                 await this.setSystemPrompt(systemPrompt);
             }
 
+            // Set voice after connection is ready
+            if (voice) {
+                await this.setVoice(voice);
+            }
+
             // Send session update to enable input audio transcription
             const sessionUpdate = {
                 type: 'session.update',
@@ -142,6 +150,42 @@ export class WebRTCService {
 
         this.dataChannel.send(JSON.stringify(sessionUpdate));
         this.currentSystemPrompt = systemPrompt;
+    }
+
+    // Add more detailed logging
+    async setVoice(newVoice) {
+        if (!this.dataChannel) {
+            console.error('Data channel not initialized');
+            return;
+        }
+        
+        if (this.dataChannel.readyState !== 'open') {
+            console.error('Data channel not open, current state:', this.dataChannel.readyState);
+            return;
+        }
+        
+        // Don't update if the voice hasn't changed
+        if (this.currentVoice === newVoice) {
+            console.log('Voice unchanged, skipping update');
+            return;
+        }
+        
+        // // Check if model has already responded with audio
+        // if (this.hasModelResponded) {
+        //     console.error('Cannot change voice after the model has responded with audio');
+        //     return;
+        // }
+
+        const sessionUpdate = {
+            type: 'session.update',
+            session: {
+                voice: newVoice
+            }
+        };
+
+        this.dataChannel.send(JSON.stringify(sessionUpdate));
+        console.log("Voice updated to:", newVoice);
+        this.currentVoice = newVoice;
     }
 
     async disconnect() {
@@ -276,4 +320,4 @@ export class WebRTCService {
     setOnMessageCallback(cb) {
         this.onMessage = cb;
     }
-} 
+}
